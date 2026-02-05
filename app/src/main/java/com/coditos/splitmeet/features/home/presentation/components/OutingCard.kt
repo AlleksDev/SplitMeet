@@ -21,19 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.coditos.splitmeet.core.ui.theme.SplitMeetTheme
-
-data class ExpenseUiModel(
-    val title: String,
-    val category: String,
-    val total: String,
-    val perPerson: String,
-    val attendees: Int,
-    val paid: Int
-)
-
+import com.coditos.splitmeet.features.home.domain.entities.Outing
 
 @Composable
-fun OutingCard(expense: ExpenseUiModel) {
+fun OutingCard(expense: Outing) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -95,7 +86,7 @@ fun OutingCard(expense: ExpenseUiModel) {
 @Composable
 fun PrevOutingCard() {
     SplitMeetTheme {
-        val exp = ExpenseUiModel(
+        val exp = Outing(
             title = "Salida chida unu",
             category = "Restaurante",
             total = "1000.00",
