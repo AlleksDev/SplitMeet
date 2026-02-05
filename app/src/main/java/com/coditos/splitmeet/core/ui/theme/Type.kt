@@ -1,4 +1,4 @@
-package com.coditos.splitmeet.ui.theme
+package com.coditos.splitmeet.core.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
