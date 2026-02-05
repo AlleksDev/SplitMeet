@@ -27,8 +27,8 @@ data class ExpenseUiModel(
     val category: String,
     val total: String,
     val perPerson: String,
-    val attendees: Float,
-    val paid: Float
+    val attendees: Int,
+    val paid: Int
 )
 
 
@@ -36,13 +36,14 @@ data class ExpenseUiModel(
 fun OutingCard(expense: ExpenseUiModel) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -50,22 +51,21 @@ fun OutingCard(expense: ExpenseUiModel) {
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-
-                //CategoryChip(expense.category)
+                CategoryChip(category = expense.category)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "12 de febrero • ${expense.attendees} asistentes",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
 
             Divider(modifier = Modifier.padding(vertical = 12.dp))
 
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Bottom,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 ExpenseInfoRow(
@@ -78,7 +78,7 @@ fun OutingCard(expense: ExpenseUiModel) {
                 ExpenseInfoRow(
                     label = "Por persona",
                     value = "$${expense.perPerson}",
-                    valueColor = Color(0xFF1E88E5),
+                    valueColor = Color(0xFF2196F3),
                     modifier = Modifier.weight(1f)
                 )
 
@@ -91,22 +91,17 @@ fun OutingCard(expense: ExpenseUiModel) {
     }
 }
 
-@Composable
-fun CategoryChip(x0: String) {
-    TODO("Not yet implemented")
-}
-
 @Preview(showBackground = true)
 @Composable
 fun PrevOutingCard() {
     SplitMeetTheme {
         val exp = ExpenseUiModel(
-            title = "IDita",
-            category = "Cine",
-            total = "900",
-            perPerson = "100",
-            paid = 3f,
-            attendees = 4f
+            title = "Salida chida unu",
+            category = "Restaurante",
+            total = "1000.00",
+            perPerson = "250.00",
+            paid = 3,
+            attendees = 4
         )
         OutingCard(exp)
     }
