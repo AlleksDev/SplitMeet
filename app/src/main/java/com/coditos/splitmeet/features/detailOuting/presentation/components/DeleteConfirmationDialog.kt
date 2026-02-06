@@ -42,14 +42,6 @@ fun DeleteConfirmationDialog(
         onDismissRequest = { if (!isDeleting) onDismiss() },
         shape = RoundedCornerShape(24.dp),
         containerColor = MaterialTheme.colorScheme.surface,
-        icon = {
-            Icon(
-                imageVector = Icons.Default.DeleteForever,
-                contentDescription = null,
-                tint = Color(0xFFE53935),
-                modifier = Modifier.size(48.dp)
-            )
-        },
         title = {
             Text(
                 text = "Eliminar salida",
@@ -89,43 +81,47 @@ fun DeleteConfirmationDialog(
             }
         },
         confirmButton = {
-            Button(
-                onClick = onConfirm,
-                enabled = !isDeleting,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFE53935),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
-                if (isDeleting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp
+                OutlinedButton(
+                    onClick = onDismiss,
+                    enabled = !isDeleting,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Cancelar",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium
+                        )
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
                 }
-                Text(
-                    text = if (isDeleting) "Eliminando..." else "Eliminar",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium
+                Spacer(modifier = Modifier.width(16.dp))
+                Button(
+                    onClick = onConfirm,
+                    enabled = !isDeleting,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE53935),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    if (isDeleting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    Text(
+                        text = if (isDeleting) "Eliminando..." else "Eliminar",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium
+                        )
                     )
-                )
-            }
-        },
-        dismissButton = {
-            OutlinedButton(
-                onClick = onDismiss,
-                enabled = !isDeleting,
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "Cancelar",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium
-                    )
-                )
+                }
             }
         }
     )

@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.coditos.splitmeet.core.navigation.AddProducts
 import com.coditos.splitmeet.core.navigation.FeatureNavGraph
 import com.coditos.splitmeet.core.navigation.Home
 import com.coditos.splitmeet.core.navigation.OutingDetail
@@ -32,9 +33,8 @@ class DetailOutingNavGraph(
                         popUpTo(OutingDetail(outingDetail.outingId)) { inclusive = true }
                     }
                 },
-                onNavigateToAllProducts = { id ->
-                    // TODO: Navigate to product feature (all products view)
-                    // navController.navigate(AllProducts(id))
+                onNavigateToAddProducts = { id, categoryId, categoryName ->
+                    navController.navigate(AddProducts(id, categoryId, categoryName))
                 }
             )
         }
