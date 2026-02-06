@@ -22,7 +22,6 @@ fun OutingTabs(
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf("Activas", "Historial")
-    val primaryColor = Color(0xFF2196F3)
 
     TabRow(
         selectedTabIndex = selectedTabIndex,
@@ -33,7 +32,7 @@ fun OutingTabs(
             TabRowDefaults.SecondaryIndicator(
                 modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
                 height = 3.dp,
-                color = primaryColor
+                color = MaterialTheme.colorScheme.primary
             )
         },
         divider = {}
@@ -46,7 +45,7 @@ fun OutingTabs(
                     Text(
                         text = title,
                         fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal,
-                        color = if (selectedTabIndex == index) primaryColor else Color.Gray
+                        color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             )

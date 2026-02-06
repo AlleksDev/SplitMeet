@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coditos.splitmeet.core.ui.theme.successGreen
 
 @Composable
 fun CircleProgress(
@@ -25,8 +26,8 @@ fun CircleProgress(
     modifier: Modifier = Modifier,
     size: Dp = 50.dp,
     strokeWidth: Dp = 4.dp,
-    backgroundColor: Color = Color(0xFFE0E0E0),
-    progressColor: Color = Color(0xFF66BB6A)
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    progressColor: Color = successGreen
 ) {
     val progress = if (total > 0) value.toFloat() / total.toFloat() else 0f
 
@@ -70,7 +71,7 @@ fun CircleProgress(
             text = "PAGADOS",
             style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
             fontWeight = FontWeight.Bold,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
