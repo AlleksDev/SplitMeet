@@ -11,4 +11,13 @@ interface DetailOutingRepository {
     suspend fun getOutingItems(outingId: Long): List<OutingItem>
     suspend fun searchUsers(username: String): List<SearchUser>
     suspend fun addParticipant(outingId: Long, userId: Long): Boolean
+    suspend fun updateOuting(
+        outingId: Long,
+        name: String,
+        description: String?,
+        categoryId: Long,
+        outingDate: String,
+        splitType: String
+    ): OutingDetail
+    suspend fun deleteOuting(outingId: Long)
 }

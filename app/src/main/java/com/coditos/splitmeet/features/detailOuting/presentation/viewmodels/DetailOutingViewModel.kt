@@ -4,11 +4,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.AddParticipantUseCase
+import com.coditos.splitmeet.features.detailOuting.domain.usecases.DeleteOutingUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetOutingDetailUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetOutingItemsUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetParticipantsUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.SearchUsersUseCase
+import com.coditos.splitmeet.features.detailOuting.domain.usecases.UpdateOutingUseCase
 import com.coditos.splitmeet.features.detailOuting.presentation.screens.DetailOutingUiState
+import com.coditos.splitmeet.features.outing.domain.entities.Category
+import com.coditos.splitmeet.features.outing.domain.usecases.GetCategoriesUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +25,10 @@ class DetailOutingViewModel(
     private val getParticipantsUseCase: GetParticipantsUseCase,
     private val getOutingItemsUseCase: GetOutingItemsUseCase,
     private val searchUsersUseCase: SearchUsersUseCase,
-    private val addParticipantUseCase: AddParticipantUseCase
+    private val addParticipantUseCase: AddParticipantUseCase,
+    private val updateOutingUseCase: UpdateOutingUseCase,
+    private val deleteOutingUseCase: DeleteOutingUseCase,
+    private val getCategoriesUseCase: GetCategoriesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailOutingUiState())
@@ -29,6 +36,8 @@ class DetailOutingViewModel(
 
     private var outingId: Long = 0
     private var searchJob: Job? = null
+    
+    private var onDeleteSuccess: (() -> Unit)? = null
 
     fun loadOutingDetail(outingId: Long) {
         this.outingId = outingId
@@ -159,6 +168,7 @@ class DetailOutingViewModel(
     }
 
     fun addParticipant(userId: Long) {
+        val user = _uiState.value.searchResults.find { it.id == userId }
         _uiState.update { it.copy(addingParticipantId = userId, addParticipantError = null) }
 
         viewModelScope.launch {
@@ -170,6 +180,8 @@ class DetailOutingViewModel(
                     _uiState.update { it.copy(addingParticipantId = null) }
                     // Refresh participants list
                     loadParticipants()
+                    // Show success message
+                    showSuccessMessage("Invitación enviada a @${user?.username ?: "usuario"}")
                     // Hide modal after short delay
                     delay(500)
                     hideAddParticipantModal()
@@ -183,6 +195,157 @@ class DetailOutingViewModel(
                     }
                 }
             )
+        }
+    }
+
+    // Edit outing functions
+    fun showEditModal() {
+        val currentDetail = _uiState.value.outingDetail ?: return
+        
+        viewModelScope.launch {
+            // Load categories first
+            val categoriesResult = getCategoriesUseCase()
+            val categories = categoriesResult.getOrDefault(emptyList())
+            
+            _uiState.update {
+                it.copy(
+                    showEditModal = true,
+                    editName = currentDetail.name,
+                    editDescription = currentDetail.description ?: "",
+                    editCategoryId = currentDetail.categoryId,
+                    editOutingDate = currentDetail.outingDate,
+                    editSplitType = currentDetail.splitType,
+                    categories = categories
+                )
+            }
+        }
+    }
+
+    fun hideEditModal() {
+        _uiState.update { it.copy(showEditModal = false) }
+    }
+
+    fun onEditNameChanged(name: String) {
+        _uiState.update { it.copy(editName = name) }
+    }
+
+    fun onEditDescriptionChanged(description: String) {
+        _uiState.update { it.copy(editDescription = description) }
+    }
+
+    fun onEditCategoryChanged(categoryId: Long) {
+        _uiState.update { it.copy(editCategoryId = categoryId) }
+    }
+
+    fun onEditDateChanged(date: String) {
+        _uiState.update { it.copy(editOutingDate = date) }
+    }
+
+    fun onEditSplitTypeChanged(splitType: String) {
+        _uiState.update { it.copy(editSplitType = splitType) }
+    }
+
+    fun updateOuting() {
+        val state = _uiState.value
+        val categoryId = state.editCategoryId ?: return
+        
+        _uiState.update { it.copy(isUpdating = true) }
+
+        viewModelScope.launch {
+            val result = updateOutingUseCase(
+                outingId = outingId,
+                name = state.editName,
+                description = state.editDescription.ifBlank { null },
+                categoryId = categoryId,
+                outingDate = state.editOutingDate,
+                splitType = state.editSplitType
+            )
+
+            result.fold(
+                onSuccess = { updatedDetail ->
+                    _uiState.update { 
+                        it.copy(
+                            outingDetail = updatedDetail,
+                            isUpdating = false,
+                            showEditModal = false
+                        ) 
+                    }
+                    showSuccessMessage("Salida actualizada con éxito")
+                },
+                onFailure = { error ->
+                    _uiState.update { 
+                        it.copy(
+                            isUpdating = false,
+                            error = error.message ?: "Error al actualizar la salida"
+                        ) 
+                    }
+                }
+            )
+        }
+    }
+
+    // Delete outing functions
+    fun showDeleteConfirmation() {
+        _uiState.update { it.copy(showDeleteConfirmation = true) }
+    }
+
+    fun hideDeleteConfirmation() {
+        _uiState.update { it.copy(showDeleteConfirmation = false) }
+    }
+
+    fun setOnDeleteSuccess(callback: () -> Unit) {
+        onDeleteSuccess = callback
+    }
+
+    fun deleteOuting() {
+        _uiState.update { it.copy(isDeleting = true) }
+
+        viewModelScope.launch {
+            val result = deleteOutingUseCase(outingId)
+
+            result.fold(
+                onSuccess = {
+                    _uiState.update { 
+                        it.copy(
+                            isDeleting = false,
+                            showDeleteConfirmation = false
+                        ) 
+                    }
+                    onDeleteSuccess?.invoke()
+                },
+                onFailure = { error ->
+                    _uiState.update { 
+                        it.copy(
+                            isDeleting = false,
+                            showDeleteConfirmation = false,
+                            error = error.message ?: "Error al eliminar la salida"
+                        ) 
+                    }
+                }
+            )
+        }
+    }
+
+    // Success message functions
+    private fun showSuccessMessage(message: String) {
+        _uiState.update { 
+            it.copy(
+                successMessage = message,
+                showSuccessMessage = true
+            ) 
+        }
+        viewModelScope.launch {
+            delay(3000)
+            hideSuccessMessage()
+        }
+    }
+
+    fun hideSuccessMessage() {
+        _uiState.update { 
+            it.copy(
+                successMessage = null,
+                showSuccessMessage = false
+            ) 
         }
     }
 
