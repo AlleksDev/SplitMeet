@@ -12,8 +12,7 @@ fun ParticipantDto.toDomain(): Participant {
         name = this.name ?: this.username ?: "",
         status = this.status ?: "pending",
         amountOwed = this.amountOwed ?: 0.0,
-        customAmount = this.customAmount,
-        paymentStatus = this.paymentStatus ?: "pending"
+        customAmount = this.customAmount
     )
 }
 

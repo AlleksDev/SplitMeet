@@ -8,14 +8,16 @@ data class Participant(
     val name: String,
     val status: String,
     val amountOwed: Double,
-    val customAmount: Double?,
-    val paymentStatus: String
+    val customAmount: Double?
 ) {
-    val isPaid: Boolean
-        get() = paymentStatus.equals("paid", ignoreCase = true)
+    val isConfirmed: Boolean
+        get() = status.equals("confirmed", ignoreCase = true)
     
     val isPending: Boolean
-        get() = paymentStatus.equals("pending", ignoreCase = true)
+        get() = status.equals("pending", ignoreCase = true)
+    
+    val isPaid: Boolean
+        get() = status.equals("paid", ignoreCase = true)
     
     val displayInitial: Char
         get() = name.firstOrNull()?.uppercaseChar() ?: username.firstOrNull()?.uppercaseChar() ?: '?'
