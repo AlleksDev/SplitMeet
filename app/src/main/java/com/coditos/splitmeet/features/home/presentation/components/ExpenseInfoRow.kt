@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coditos.splitmeet.core.ui.theme.successGreen
 
 
 @Composable
@@ -40,5 +41,5 @@ fun ExpenseInfoRow(
 @Preview(showBackground = true)
 @Composable
 fun PrevExpenseInfoRow(){
-    ExpenseInfoRow("Total", "$100", Color(0xFF66BB6A), modifier = Modifier)
+    ExpenseInfoRow("Total", "$100", successGreen, modifier = Modifier)
 }

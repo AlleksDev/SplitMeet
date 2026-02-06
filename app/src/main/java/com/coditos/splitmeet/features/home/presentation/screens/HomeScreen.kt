@@ -49,7 +49,7 @@ fun HomeScreen(
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
                 thickness = 1.dp,
-                color = Color(0xFFE0E0E0)
+                color = MaterialTheme.colorScheme.outlineVariant
             )
 
             // Tabs
@@ -98,7 +98,7 @@ fun HomeScreen(
                         Text(
                             text = "No hay salidas registradas",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,7 +27,8 @@ fun CategoryChip(
     modifier: Modifier = Modifier
 ) {
     val (backgroundColor, contentColor) = when (category.lowercase()) {
-        "restaurante" -> Pair(Color(0xFFE8F5E9), Color(0xFF4CAF50))
+        "restaurante" -> Pair(MaterialTheme.colorScheme.primary, Color(0xFF2196F3))
+        "bar" -> Pair(MaterialTheme.colorScheme.secondary, Color(0xFF2196F3))
         "cine" -> Pair(Color(0xFFE3F2FD), Color(0xFF2196F3))
         else -> Pair(Color(0xFFF5F5F5), Color(0xFF757575))
     }
