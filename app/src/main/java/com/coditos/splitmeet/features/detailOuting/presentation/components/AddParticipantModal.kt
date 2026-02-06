@@ -60,7 +60,7 @@ fun AddParticipantModal(
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             sheetState = sheetState,
-            containerColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             Column(
@@ -85,7 +85,7 @@ fun AddParticipantModal(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Cerrar",
-                            tint = Color.Gray
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -100,14 +100,14 @@ fun AddParticipantModal(
                     placeholder = { 
                         Text(
                             text = "Buscar por nombre o usuario...",
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         ) 
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = null,
-                            tint = Color.Gray
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     },
                     trailingIcon = {
@@ -116,7 +116,7 @@ fun AddParticipantModal(
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = "Limpiar",
-                                    tint = Color.Gray,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -124,10 +124,10 @@ fun AddParticipantModal(
                     },
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFE67E22),
-                        unfocusedBorderColor = Color(0xFFE0E0E0),
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer
                     ),
                     singleLine = true
                 )
@@ -139,7 +139,7 @@ fun AddParticipantModal(
                     Text(
                         text = it,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
@@ -167,7 +167,7 @@ fun AddParticipantModal(
                         Text(
                             text = "Escribe al menos 2 caracteres para buscar",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -185,14 +185,14 @@ fun AddParticipantModal(
                             Icon(
                                 imageVector = Icons.Default.PersonSearch,
                                 contentDescription = null,
-                                tint = Color.LightGray,
+                                tint = MaterialTheme.colorScheme.outlineVariant,
                                 modifier = Modifier.size(48.dp)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "No se encontraron usuarios",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -239,7 +239,7 @@ private fun SearchUserItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = Color(0xFFF5F5F5),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(12.dp),
@@ -277,7 +277,7 @@ private fun SearchUserItem(
             Text(
                 text = "@${user.username}",
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -286,10 +286,10 @@ private fun SearchUserItem(
             onClick = onAddClick,
             enabled = !isAdding,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFE67E22),
-                contentColor = Color.White,
-                disabledContainerColor = Color(0xFFE0E0E0),
-                disabledContentColor = Color.Gray
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
             ),
             shape = RoundedCornerShape(8.dp)
         ) {

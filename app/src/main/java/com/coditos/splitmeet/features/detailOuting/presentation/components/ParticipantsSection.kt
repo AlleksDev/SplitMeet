@@ -50,7 +50,7 @@ fun ParticipantsSection(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -72,7 +72,7 @@ fun ParticipantsSection(
                     Icon(
                         imageVector = Icons.Default.Groups,
                         contentDescription = null,
-                        tint = Color(0xFF1976D2),
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(20.dp)
                     )
                     Text(
@@ -87,12 +87,12 @@ fun ParticipantsSection(
                     text = "$paidCount/$totalCount pagaron",
                     modifier = Modifier
                         .background(
-                            color = Color(0xFFE8F5E9),
+                            color = MaterialTheme.colorScheme.primaryContainer,
                             shape = RoundedCornerShape(12.dp)
                         )
                         .padding(horizontal = 12.dp, vertical = 4.dp),
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF2E7D32)
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
 
@@ -109,14 +109,14 @@ fun ParticipantsSection(
                     Icon(
                         imageVector = Icons.Default.Groups,
                         contentDescription = null,
-                        tint = Color.LightGray,
+                        tint = MaterialTheme.colorScheme.outlineVariant,
                         modifier = Modifier.size(48.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "No hay participantes agregados",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -137,8 +137,8 @@ fun ParticipantsSection(
                 onClick = onAddParticipantClick,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFE3F2FD),
-                    contentColor = Color(0xFF1976D2)
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -181,7 +181,7 @@ fun ParticipantCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = Color(0xFFF5F5F5),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(12.dp),
@@ -225,7 +225,7 @@ fun ParticipantCard(
             Text(
                 text = "@${participant.username}",
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -247,10 +247,10 @@ fun ParticipantCard(
                 else -> participant.status
             }
             val statusColor = when {
-                participant.isPaid -> Color(0xFF2E7D32)
-                participant.isConfirmed -> Color(0xFF1976D2)
-                participant.isPending -> Color(0xFFE65100)
-                else -> Color.Gray
+                participant.isPaid -> MaterialTheme.colorScheme.onPrimaryContainer
+                participant.isConfirmed -> MaterialTheme.colorScheme.secondary
+                participant.isPending -> MaterialTheme.colorScheme.tertiary
+                else -> MaterialTheme.colorScheme.onSurfaceVariant
             }
             
             Row(
