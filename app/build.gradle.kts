@@ -76,6 +76,7 @@ dependencies {
 
     // DataStore
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.compose.ui.text.google.fonts)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

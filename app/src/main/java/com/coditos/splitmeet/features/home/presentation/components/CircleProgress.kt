@@ -63,7 +63,7 @@ fun CircleProgress(
                 text = "$value/$total",
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
-                color = Color.DarkGray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Text(

@@ -117,7 +117,9 @@ fun OutingCard(expense: Outing) {
 
                 CircleProgress(
                     value = expense.PaidCount,
-                    total = expense.ParticipantCount
+                    total = expense.ParticipantCount,
+                    backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    progressColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
             }
         }
