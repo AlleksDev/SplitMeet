@@ -2,7 +2,8 @@
 
 import android.content.Context
 import com.coditos.splitmeet.core.network.SplitMeetApi
-import com.coditos.splitmeet.features.outing.data.repositories.OutingRepositoryImpl
+import com.coditos.splitmeet.features.home.domain.repositories.HomeRepository
+import com.coditos.splitmeet.features.home.data.repositories.HomeRepositoryImpl
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
     class AppContainer(context: Context) {
@@ -13,15 +14,14 @@ import retrofit2.converter.gson.GsonConverterFactory
             .build()
     }
 
-    private val SplitMeetApiRetrofit = createRetrofit("https://api.example.com/")
+    private val SplitMeetApiRetrofit = createRetrofit("https://frimeet.fun/")
 
 
     val splitMeetApi: SplitMeetApi by lazy {
         SplitMeetApiRetrofit.create(SplitMeetApi::class.java)
     }
 
-    val outingsRepository: com.coditos.splitmeet.features.outing.domain.repositories.HomeRepository by lazy {
-        OutingRepositoryImpl(splitMeetApi)
-
+    val homeRepository: HomeRepository by lazy {
+        HomeRepositoryImpl(splitMeetApi)
     }
 }

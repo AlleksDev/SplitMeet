@@ -7,10 +7,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,20 +43,47 @@ fun OutingCard(expense: Outing) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = expense.title,
+                    text = expense.Name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-                CategoryChip(category = expense.category)
+                CategoryChip(category = expense.CategoryName)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = "12 de febrero • ${expense.attendees} asistentes",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CalendarToday,
+                    contentDescription = "Fecha",
+                    tint = Color.Gray,
+                    modifier = Modifier.padding(end = 4.dp).height(20.dp)
+                )
+
+                Text(
+                    text = "12 de febrero",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Icon(
+                    imageVector = Icons.Default.Group,
+                    contentDescription = "Asistentes",
+                    tint = Color.Gray,
+                    modifier = Modifier.padding(end = 4.dp).height(20.dp)
+                )
+
+                Text(
+                    text = "${expense.ParticipantCount} asistentes",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+
 
             Divider(modifier = Modifier.padding(vertical = 12.dp))
 
@@ -61,21 +93,21 @@ fun OutingCard(expense: Outing) {
             ) {
                 ExpenseInfoRow(
                     label = "Total",
-                    value = "$${expense.total}",
+                    value = "$${expense.TotalAmount}",
                     valueColor = Color(0xFF66BB6A),
                     modifier = Modifier.weight(1f)
                 )
 
                 ExpenseInfoRow(
                     label = "Por persona",
-                    value = "$${expense.perPerson}",
+                    value = "$${String.format("%.2f", expense.TotalAmount / expense.ParticipantCount)}",
                     valueColor = Color(0xFF2196F3),
                     modifier = Modifier.weight(1f)
                 )
 
                 CircleProgress(
-                    value = expense.paid,
-                    total = expense.attendees
+                    value = expense.PaidCount,
+                    total = expense.ParticipantCount
                 )
             }
         }
@@ -87,12 +119,13 @@ fun OutingCard(expense: Outing) {
 fun PrevOutingCard() {
     SplitMeetTheme {
         val exp = Outing(
-            title = "Salida chida unu",
-            category = "Restaurante",
-            total = "1000.00",
-            perPerson = "250.00",
-            paid = 3,
-            attendees = 4
+            Name = "Salida Chida unu",
+            Description = "Salida Chida unu",
+            CategoryName = "Restaurante",
+            SplitType = "Equally",
+            TotalAmount = 100f,
+            ParticipantCount = 13,
+            PaidCount = 5
         )
         OutingCard(exp)
     }
