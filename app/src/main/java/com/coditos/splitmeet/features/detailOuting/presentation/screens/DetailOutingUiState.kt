@@ -4,6 +4,7 @@ import com.coditos.splitmeet.features.detailOuting.domain.entities.OutingDetail
 import com.coditos.splitmeet.features.detailOuting.domain.entities.OutingItem
 import com.coditos.splitmeet.features.detailOuting.domain.entities.Participant
 import com.coditos.splitmeet.features.detailOuting.domain.entities.SearchUser
+import com.coditos.splitmeet.features.outing.domain.entities.Category
 
 data class DetailOutingUiState(
     val isLoading: Boolean = false,
@@ -26,7 +27,25 @@ data class DetailOutingUiState(
     val searchResults: List<SearchUser> = emptyList(),
     val isSearching: Boolean = false,
     val addingParticipantId: Long? = null,
-    val addParticipantError: String? = null
+    val addParticipantError: String? = null,
+    
+    // Edit outing modal
+    val showEditModal: Boolean = false,
+    val editName: String = "",
+    val editDescription: String = "",
+    val editCategoryId: Long? = null,
+    val editOutingDate: String = "",
+    val editSplitType: String = "equal",
+    val isUpdating: Boolean = false,
+    val categories: List<Category> = emptyList(),
+    
+    // Delete confirmation dialog
+    val showDeleteConfirmation: Boolean = false,
+    val isDeleting: Boolean = false,
+    
+    // Success/Error messages
+    val successMessage: String? = null,
+    val showSuccessMessage: Boolean = false
 ) {
     val totalItems: Double
         get() = items.sumOf { it.subtotal }
