@@ -6,9 +6,6 @@ import androidx.compose.ui.graphics.Color
 // PRIMARY COLOR - ORANGE BRAND (Main from design mockups)
 // ============================================================================
 val primaryLight = Color(0xFFFF9500)
-// ============================================================================
-// PRIMARY COLOR - ORANGE BRAND (Main from design mockups)
-// ============================================================================
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFFFD700)
 val onPrimaryContainerLight = Color(0xFFCC7700)

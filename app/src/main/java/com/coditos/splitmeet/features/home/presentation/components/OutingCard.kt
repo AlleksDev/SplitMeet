@@ -123,7 +123,7 @@ fun OutingCard(
                     value = expense.paidCount,
                     total = expense.participantCount,
                     backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    progressColor = MaterialTheme.colorScheme.surfaceVariant,
+                    progressColor = MaterialTheme.colorScheme.primaryContainer,
                 )
             }
         }
