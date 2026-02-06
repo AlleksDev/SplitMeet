@@ -4,8 +4,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.coditos.splitmeet.core.navigation.CreateOuting
 import com.coditos.splitmeet.core.navigation.FeatureNavGraph
 import com.coditos.splitmeet.core.navigation.Home
+import com.coditos.splitmeet.core.navigation.OutingDetail
 import com.coditos.splitmeet.features.home.di.HomeModule
 import com.coditos.splitmeet.features.home.presentation.screens.HomeScreen
 import com.coditos.splitmeet.features.home.presentation.viewmodels.HomeViewModel
@@ -22,7 +24,13 @@ class HomeNavGraph(
                 factory = homeModule.provideHomeViewModelFactory()
             )
             HomeScreen(
-                viewModel = viewModel
+                viewModel = viewModel,
+                onNavigateToCreateOuting = {
+                    navController.navigate(CreateOuting)
+                },
+                onNavigateToOutingDetail = { outingId ->
+                    navController.navigate(OutingDetail(outingId))
+                }
             )
         }
     }

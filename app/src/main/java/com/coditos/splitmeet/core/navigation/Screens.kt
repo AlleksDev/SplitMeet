@@ -10,3 +10,9 @@ object Login
 
 @Serializable
 object Register
+
+@Serializable
+object CreateOuting
+
+@Serializable
+data class OutingDetail(val outingId: Long)

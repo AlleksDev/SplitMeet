@@ -5,12 +5,13 @@ import com.coditos.splitmeet.features.home.domain.entities.Outing
 
 fun OutingDto.toDomain(): Outing {
     return Outing(
-        Name = this.Name,
-        Description = this.Description,
-        CategoryName = this.CategoryName,
-        SplitType = this.SplitType,
-        TotalAmount = this.TotalAmount,
-        ParticipantCount = this.ParticipantCount,
-        PaidCount = this.PaidCount
+        id = this.id,
+        name = this.name,
+        description = this.description ?: "",
+        categoryName = this.categoryName,
+        splitType = this.splitType,
+        totalAmount = this.totalAmount,
+        participantCount = this.participantCount,
+        paidCount = this.paidCount
     )
 }
