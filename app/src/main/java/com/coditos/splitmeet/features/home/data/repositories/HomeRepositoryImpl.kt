@@ -13,8 +13,4 @@ class HomeRepositoryImpl(
         val response = api.getOutings()
         return response.map { it.toDomain() }
     }
-
-    override suspend fun getOutingById(id: String): Outing {
-        TODO("Not yet implemented")
-    }
 }
