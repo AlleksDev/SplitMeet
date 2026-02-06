@@ -4,6 +4,7 @@ import com.coditos.splitmeet.core.network.SplitMeetApi
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.mapper.toDomain
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.mapper.toDomainList
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.AddParticipantRequest
+import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.UpdateOutingRequest
 import com.coditos.splitmeet.features.detailOuting.domain.entities.OutingDetail
 import com.coditos.splitmeet.features.detailOuting.domain.entities.OutingItem
 import com.coditos.splitmeet.features.detailOuting.domain.entities.Participant
@@ -38,5 +39,28 @@ class DetailOutingRepositoryImpl(
         val request = AddParticipantRequest(userId = userId)
         val response = api.addParticipant(outingId, request)
         return response.id != null
+    }
+
+    override suspend fun updateOuting(
+        outingId: Long,
+        name: String,
+        description: String?,
+        categoryId: Long,
+        outingDate: String,
+        splitType: String
+    ): OutingDetail {
+        val request = UpdateOutingRequest(
+            name = name,
+            description = description,
+            categoryId = categoryId,
+            outingDate = outingDate,
+            splitType = splitType
+        )
+        val response = api.updateOuting(outingId, request)
+        return response.toDomain()
+    }
+
+    override suspend fun deleteOuting(outingId: Long) {
+        api.deleteOuting(outingId)
     }
 }
