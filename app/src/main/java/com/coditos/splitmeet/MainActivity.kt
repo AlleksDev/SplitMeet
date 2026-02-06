@@ -13,7 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.coditos.splitmeet.core.di.AppContainer
+import com.coditos.splitmeet.core.navigation.NavigationWrapper
 import com.coditos.splitmeet.core.ui.theme.SplitMeetTheme
+import com.coditos.splitmeet.features.home.navigation.HomeNavGraph
+import com.coditos.splitmeet.features.home.di.HomeModule
 import com.coditos.splitmeet.features.home.presentation.screens.HomeScreen
 class MainActivity : ComponentActivity() {
 
@@ -22,15 +25,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inicializar el contenedor de dependencias
-        appContainer = AppContainer(applicationContext)
+        appContainer = AppContainer(this)
+        val homeModule  = HomeModule(appContainer)
+
+        val navGraphs = listOf(
+            HomeNavGraph(homeModule)
+        )
 
         enableEdgeToEdge()
         setContent {
             SplitMeetTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) {
-                    HomeScreen()
-                }
+                NavigationWrapper(navGraphs)
             }
         }
     }

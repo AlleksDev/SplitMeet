@@ -5,9 +5,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface SplitMeetApi {
-    @GET("home/items")
+    @GET("outings/me")
     suspend fun getOutings(): List<OutingDto>
 
-    @GET("home/items/{id}")
+    @GET("outings/{id}")
     suspend fun getOutingById(@Path("id") id: String): OutingDto
 }

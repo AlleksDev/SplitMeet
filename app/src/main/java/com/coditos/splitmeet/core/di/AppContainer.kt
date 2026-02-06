@@ -1,24 +1,44 @@
-    package com.coditos.splitmeet.core.di
+package com.coditos.splitmeet.core.di
 
 import android.content.Context
 import com.coditos.splitmeet.core.network.SplitMeetApi
-import com.coditos.splitmeet.features.home.domain.repositories.HomeRepository
+import com.coditos.splitmeet.core.network.interceptor.AuthInterceptor
+import com.coditos.splitmeet.core.network.interceptor.provideLoggingInterceptor
 import com.coditos.splitmeet.features.home.data.repositories.HomeRepositoryImpl
+import com.coditos.splitmeet.features.home.domain.repositories.HomeRepository
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-    class AppContainer(context: Context) {
+import java.util.concurrent.TimeUnit
+
+class AppContainer(context: Context) {
+
+    private val tokenProvider: () -> String = {
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZWphbmRyb0B0ZXN0LmNvbSIsImV4cCI6MTc3MDQ1NzE3MiwibmFtZSI6IkFsZWphbmRybyBNZW5kb3phMDkiLCJ1c2VyX2lkIjozfQ.GQfqSQWMOI5dwOBIX9KXgFuZXQOAMH64A8p64XoVuLI"
+    }
+
+    private fun createOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor(tokenProvider))
+            .addInterceptor(provideLoggingInterceptor())
+            .build()
+    }
+
     private fun createRetrofit(baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
+            .client(createOkHttpClient()) // 👈 aquí está la clave
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    private val SplitMeetApiRetrofit = createRetrofit("https://frimeet.fun/")
-
+    private val retrofit = createRetrofit("https://frimeet.fun/")
 
     val splitMeetApi: SplitMeetApi by lazy {
-        SplitMeetApiRetrofit.create(SplitMeetApi::class.java)
+        retrofit.create(SplitMeetApi::class.java)
     }
 
     val homeRepository: HomeRepository by lazy {

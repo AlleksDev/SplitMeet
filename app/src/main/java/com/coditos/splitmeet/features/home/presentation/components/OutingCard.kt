@@ -32,7 +32,10 @@ import com.coditos.splitmeet.features.home.domain.entities.Outing
 fun OutingCard(expense: Outing) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -45,7 +48,8 @@ fun OutingCard(expense: Outing) {
                 Text(
                     text = expense.Name,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 CategoryChip(category = expense.CategoryName)
             }
@@ -58,14 +62,16 @@ fun OutingCard(expense: Outing) {
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
                     contentDescription = "Fecha",
-                    tint = Color.Gray,
-                    modifier = Modifier.padding(end = 4.dp).height(20.dp)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .height(20.dp)
                 )
 
                 Text(
                     text = "12 de febrero",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -73,19 +79,23 @@ fun OutingCard(expense: Outing) {
                 Icon(
                     imageVector = Icons.Default.Group,
                     contentDescription = "Asistentes",
-                    tint = Color.Gray,
-                    modifier = Modifier.padding(end = 4.dp).height(20.dp)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .height(20.dp)
                 )
 
                 Text(
                     text = "${expense.ParticipantCount} asistentes",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-
-            Divider(modifier = Modifier.padding(vertical = 12.dp))
+            Divider(
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
 
             Row(
                 verticalAlignment = Alignment.Bottom,
@@ -94,14 +104,14 @@ fun OutingCard(expense: Outing) {
                 ExpenseInfoRow(
                     label = "Total",
                     value = "$${expense.TotalAmount}",
-                    valueColor = Color(0xFF66BB6A),
+                    valueColor = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
                 )
 
                 ExpenseInfoRow(
                     label = "Por persona",
                     value = "$${String.format("%.2f", expense.TotalAmount / expense.ParticipantCount)}",
-                    valueColor = Color(0xFF2196F3),
+                    valueColor = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.weight(1f)
                 )
 
