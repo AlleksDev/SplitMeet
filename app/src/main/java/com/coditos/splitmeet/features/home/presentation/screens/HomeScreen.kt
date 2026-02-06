@@ -24,8 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coditos.splitmeet.features.auth.presentation.screens.LoginScreen
 import com.coditos.splitmeet.features.home.presentation.components.HomeHeader
 import com.coditos.splitmeet.features.home.presentation.components.OutingCard
 import com.coditos.splitmeet.features.home.presentation.components.OutingTabs

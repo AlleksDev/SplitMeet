@@ -4,8 +4,13 @@ import android.content.Context
 import com.coditos.splitmeet.core.network.SplitMeetApi
 import com.coditos.splitmeet.core.network.interceptor.AuthInterceptor
 import com.coditos.splitmeet.core.network.interceptor.provideLoggingInterceptor
+import com.coditos.splitmeet.core.storage.TokenDataStore
+import com.coditos.splitmeet.features.auth.data.repositories.AuthRepositoryImpl
+import com.coditos.splitmeet.features.auth.domain.repositories.AuthRepository
 import com.coditos.splitmeet.features.home.data.repositories.HomeRepositoryImpl
 import com.coditos.splitmeet.features.home.domain.repositories.HomeRepository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -13,8 +18,14 @@ import java.util.concurrent.TimeUnit
 
 class AppContainer(context: Context) {
 
+    val tokenDataStore: TokenDataStore by lazy {
+        TokenDataStore(context)
+    }
+
     private val tokenProvider: () -> String = {
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZWphbmRyb0B0ZXN0LmNvbSIsImV4cCI6MTc3MDQ1NzE3MiwibmFtZSI6IkFsZWphbmRybyBNZW5kb3phMDkiLCJ1c2VyX2lkIjozfQ.GQfqSQWMOI5dwOBIX9KXgFuZXQOAMH64A8p64XoVuLI"
+        runBlocking {
+            tokenDataStore.getToken() ?: ""
+        }
     }
 
     private fun createOkHttpClient(): OkHttpClient {
@@ -43,5 +54,9 @@ class AppContainer(context: Context) {
 
     val homeRepository: HomeRepository by lazy {
         HomeRepositoryImpl(splitMeetApi)
+    }
+
+    val authRepository: AuthRepository by lazy {
+        AuthRepositoryImpl(splitMeetApi)
     }
 }
