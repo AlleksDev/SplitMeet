@@ -122,8 +122,8 @@ fun OutingCard(
                 CircleProgress(
                     value = expense.paidCount,
                     total = expense.participantCount,
-                    backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    progressColor = MaterialTheme.colorScheme.primaryContainer,
+                    backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
+                    progressColor = MaterialTheme.colorScheme.primary,
                 )
             }
         }

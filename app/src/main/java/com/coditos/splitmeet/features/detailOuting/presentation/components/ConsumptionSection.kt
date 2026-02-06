@@ -1,5 +1,6 @@
 package com.coditos.splitmeet.features.detailOuting.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,7 +52,7 @@ fun ConsumptionSection(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -68,7 +69,7 @@ fun ConsumptionSection(
                 Icon(
                     imageVector = Icons.Default.Receipt,
                     contentDescription = null,
-                    tint = Color(0xFFE67E22),
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
                 Text(
@@ -92,14 +93,14 @@ fun ConsumptionSection(
                     Icon(
                         imageVector = Icons.Default.Receipt,
                         contentDescription = null,
-                        tint = Color.LightGray,
+                        tint = MaterialTheme.colorScheme.outlineVariant,
                         modifier = Modifier.size(48.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "No hay productos agregados",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -109,7 +110,7 @@ fun ConsumptionSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = Color(0xFFF5F5F5),
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
                             shape = RoundedCornerShape(8.dp)
                         )
                         .padding(horizontal = 12.dp, vertical = 8.dp),
@@ -118,27 +119,27 @@ fun ConsumptionSection(
                     Text(
                         text = "Producto",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(2f)
                     )
                     Text(
                         text = "P.U.",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = "Cant.",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(0.7f),
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = "Subtotal",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1.3f),
                         textAlign = TextAlign.End
                     )
@@ -154,7 +155,7 @@ fun ConsumptionSection(
 
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    color = Color(0xFFE0E0E0)
+                    color = MaterialTheme.colorScheme.outline
                 )
 
                 // Total row
@@ -176,7 +177,7 @@ fun ConsumptionSection(
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = Color(0xFFE67E22)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -189,7 +190,7 @@ fun ConsumptionSection(
                     onClick = onViewAllClick,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color(0xFF1976D2)
+                        contentColor = MaterialTheme.colorScheme.secondary
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -209,14 +210,14 @@ fun ConsumptionSection(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Add product button
             Button(
                 onClick = onAddItemClick,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFF3E0),
-                    contentColor = Color(0xFFE67E22)
+                    containerColor = Color.Transparent, // sin fondo
+                    contentColor = MaterialTheme.colorScheme.primary // color del texto e ícono
                 ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary), // borde coloreado
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Icon(
@@ -227,7 +228,7 @@ fun ConsumptionSection(
                 Text(
                     text = if (items.isEmpty()) "Agregar producto" else "Agregar otro producto",
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.SemiBold
                     )
                 )
             }
@@ -260,7 +261,7 @@ private fun ItemRow(item: OutingItem) {
                 Text(
                     text = presentation,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

@@ -22,27 +22,19 @@ fun OutingHeader(
     title: String,
     modifier: Modifier = Modifier
 ) {
+    val logo = R.drawable.split
+
     Column(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        // Logo placeholder - uncomment when you have the logo resource
-        /*Image(
-            painter = painterResource(id = R.drawable.logo_splitmeet),
+
+        Image(
+            painter = painterResource(id = logo),
             contentDescription = "SplitMeet Logo",
             modifier = Modifier.height(32.dp)
-        )*/
-
-        Text(
-            text = "SPLITMET",
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                letterSpacing = 2.sp
-            ),
-            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(8.dp))

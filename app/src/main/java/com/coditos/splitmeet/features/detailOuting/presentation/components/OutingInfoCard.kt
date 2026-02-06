@@ -59,7 +59,7 @@ fun OutingInfoCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -88,14 +88,14 @@ fun OutingInfoCard(
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Editar",
-                                tint = Color.Gray
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         IconButton(onClick = onDeleteClick) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Eliminar",
-                                tint = Color(0xFFE53935)
+                                tint = MaterialTheme.colorScheme.error
                             )
                         }
                     }
@@ -113,7 +113,7 @@ fun OutingInfoCard(
                     Row(
                         modifier = Modifier
                             .background(
-                                color = Color(0xFFFFF3E0),
+                                color = MaterialTheme.colorScheme.tertiaryContainer,
                                 shape = RoundedCornerShape(16.dp)
                             )
                             .padding(horizontal = 12.dp, vertical = 4.dp),
@@ -123,13 +123,13 @@ fun OutingInfoCard(
                         Icon(
                             imageVector = Icons.Default.Restaurant,
                             contentDescription = null,
-                            tint = Color(0xFFE65100),
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
                             modifier = Modifier.size(14.dp)
                         )
                         Text(
                             text = category,
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFE65100)
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     }
                 }
@@ -142,16 +142,16 @@ fun OutingInfoCard(
                     else -> outingDetail.status
                 }
                 val statusColor = when (outingDetail.status.lowercase()) {
-                    "active" -> Color(0xFFF5F5F5)
-                    "completed" -> Color(0xFFE8F5E9)
-                    "cancelled" -> Color(0xFFFFEBEE)
-                    else -> Color(0xFFF5F5F5)
+                    "active" -> MaterialTheme.colorScheme.surfaceContainerHigh
+                    "completed" -> MaterialTheme.colorScheme.primaryContainer
+                    "cancelled" -> MaterialTheme.colorScheme.errorContainer
+                    else -> MaterialTheme.colorScheme.surfaceContainerHigh
                 }
                 val statusTextColor = when (outingDetail.status.lowercase()) {
-                    "active" -> Color.Gray
-                    "completed" -> Color(0xFF2E7D32)
-                    "cancelled" -> Color(0xFFC62828)
-                    else -> Color.Gray
+                    "active" -> MaterialTheme.colorScheme.onSurfaceVariant
+                    "completed" -> MaterialTheme.colorScheme.onPrimaryContainer
+                    "cancelled" -> MaterialTheme.colorScheme.onErrorContainer
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
                 }
 
                 Row(
@@ -191,13 +191,13 @@ fun OutingInfoCard(
                     Icon(
                         imageVector = Icons.Default.DateRange,
                         contentDescription = null,
-                        tint = Color.Gray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
                         text = formattedDate,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Row(
@@ -207,13 +207,13 @@ fun OutingInfoCard(
                     Icon(
                         imageVector = Icons.Default.Groups,
                         contentDescription = null,
-                        tint = Color.Gray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
                         text = "$participantCount asistentes",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -225,7 +225,7 @@ fun OutingInfoCard(
                     Text(
                         text = description,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.DarkGray
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -242,14 +242,14 @@ fun OutingInfoCard(
                     Text(
                         text = "Cuenta total",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = currencyFormat.format(outingDetail.totalAmount),
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -260,14 +260,14 @@ fun OutingInfoCard(
                     Text(
                         text = "Por persona",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = currencyFormat.format(amountPerPerson),
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = Color(0xFFE67E22)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }

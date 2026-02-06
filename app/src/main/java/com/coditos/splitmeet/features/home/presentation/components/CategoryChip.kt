@@ -33,7 +33,7 @@ fun CategoryChip(
         modifier = modifier
             .border(
                 1.dp,
-                colors.primaryContainer,
+                colors.primary,
                 RoundedCornerShape(16.dp)
             )
             .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -42,7 +42,7 @@ fun CategoryChip(
             Icon(
                 imageVector = it,
                 contentDescription = null,
-                tint = colors.primaryContainer,
+                tint = colors.primary,
                 modifier = Modifier.size(14.dp)
             )
             Spacer(Modifier.width(4.dp))
@@ -50,7 +50,7 @@ fun CategoryChip(
 
         Text(
             text = category,
-            color = colors.primaryContainer,
+            color = colors.primary,
             style = MaterialTheme.typography.labelMedium.copy(fontSize = 12.sp)
         )
     }
