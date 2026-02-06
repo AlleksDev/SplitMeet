@@ -15,8 +15,12 @@ import com.coditos.splitmeet.core.navigation.NavigationWrapper
 import com.coditos.splitmeet.core.ui.theme.SplitMeetTheme
 import com.coditos.splitmeet.features.auth.di.AuthModule
 import com.coditos.splitmeet.features.auth.navigation.AuthNavGraph
+import com.coditos.splitmeet.features.detailOuting.di.DetailOutingModule
+import com.coditos.splitmeet.features.detailOuting.navigation.DetailOutingNavGraph
 import com.coditos.splitmeet.features.home.di.HomeModule
 import com.coditos.splitmeet.features.home.navigation.HomeNavGraph
+import com.coditos.splitmeet.features.outing.di.OutingModule
+import com.coditos.splitmeet.features.outing.navigation.OutingNavGraph
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
@@ -29,10 +33,14 @@ class MainActivity : ComponentActivity() {
         appContainer = AppContainer(this)
         val homeModule = HomeModule(appContainer)
         val authModule = AuthModule(appContainer)
+        val outingModule = OutingModule(appContainer)
+        val detailOutingModule = DetailOutingModule(appContainer)
 
         val navGraphs = listOf(
             AuthNavGraph(authModule),
-            HomeNavGraph(homeModule)
+            HomeNavGraph(homeModule),
+            OutingNavGraph(outingModule),
+            DetailOutingNavGraph(detailOutingModule)
         )
 
         val hasToken = runBlocking {
@@ -49,21 +57,5 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SplitMeetTheme {
-        Greeting("Android")
     }
 }

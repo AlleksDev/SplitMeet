@@ -29,7 +29,10 @@ import com.coditos.splitmeet.core.ui.theme.SplitMeetTheme
 import com.coditos.splitmeet.features.home.domain.entities.Outing
 
 @Composable
-fun OutingCard(expense: Outing) {
+fun OutingCard(
+    expense: Outing,
+    onClick: () -> Unit = {}
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -37,7 +40,8 @@ fun OutingCard(expense: Outing) {
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -46,12 +50,12 @@ fun OutingCard(expense: Outing) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = expense.Name,
+                    text = expense.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                CategoryChip(category = expense.CategoryName)
+                CategoryChip(category = expense.categoryName)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -86,7 +90,7 @@ fun OutingCard(expense: Outing) {
                 )
 
                 Text(
-                    text = "${expense.ParticipantCount} asistentes",
+                    text = "${expense.participantCount} asistentes",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -103,21 +107,21 @@ fun OutingCard(expense: Outing) {
             ) {
                 ExpenseInfoRow(
                     label = "Total",
-                    value = "$${expense.TotalAmount}",
+                    value = "$${expense.totalAmount}",
                     valueColor = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
                 )
 
                 ExpenseInfoRow(
                     label = "Por persona",
-                    value = "$${String.format("%.2f", expense.TotalAmount / expense.ParticipantCount)}",
+                    value = "$${String.format("%.2f", expense.totalAmount / expense.participantCount)}",
                     valueColor = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.weight(1f)
                 )
 
                 CircleProgress(
-                    value = expense.PaidCount,
-                    total = expense.ParticipantCount,
+                    value = expense.paidCount,
+                    total = expense.participantCount,
                     backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     progressColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
@@ -131,13 +135,14 @@ fun OutingCard(expense: Outing) {
 fun PrevOutingCard() {
     SplitMeetTheme {
         val exp = Outing(
-            Name = "Salida Chida unu",
-            Description = "Salida Chida unu",
-            CategoryName = "Restaurante",
-            SplitType = "Equally",
-            TotalAmount = 100f,
-            ParticipantCount = 13,
-            PaidCount = 5
+            id = 1,
+            name = "Salida Chida unu",
+            description = "Salida Chida unu",
+            categoryName = "Restaurante",
+            splitType = "Equally",
+            totalAmount = 100f,
+            participantCount = 13,
+            paidCount = 5
         )
         OutingCard(exp)
     }
