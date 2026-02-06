@@ -21,6 +21,8 @@ import com.coditos.splitmeet.features.home.di.HomeModule
 import com.coditos.splitmeet.features.home.navigation.HomeNavGraph
 import com.coditos.splitmeet.features.outing.di.OutingModule
 import com.coditos.splitmeet.features.outing.navigation.OutingNavGraph
+import com.coditos.splitmeet.features.product.di.ProductModule
+import com.coditos.splitmeet.features.product.navigation.ProductNavGraph
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
@@ -35,12 +37,14 @@ class MainActivity : ComponentActivity() {
         val authModule = AuthModule(appContainer)
         val outingModule = OutingModule(appContainer)
         val detailOutingModule = DetailOutingModule(appContainer)
+        val productModule = ProductModule(appContainer)
 
         val navGraphs = listOf(
             AuthNavGraph(authModule),
             HomeNavGraph(homeModule),
             OutingNavGraph(outingModule),
-            DetailOutingNavGraph(detailOutingModule)
+            DetailOutingNavGraph(detailOutingModule),
+            ProductNavGraph(productModule)
         )
 
         val hasToken = runBlocking {

@@ -55,7 +55,7 @@ fun DetailOutingScreen(
     outingId: Long,
     viewModel: DetailOutingViewModel,
     onNavigateBack: () -> Unit,
-    onNavigateToAllProducts: (Long) -> Unit = {}
+    onNavigateToAddProducts: (outingId: Long, categoryId: Long, categoryName: String) -> Unit = { _, _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -200,8 +200,20 @@ fun DetailOutingScreen(
                                 displayedItems = uiState.displayedItems,
                                 hasMoreItems = uiState.hasMoreItems,
                                 total = uiState.outingDetail!!.totalAmount,
-                                onAddItemClick = { /* TODO: Navigate to add item (product feature) */ },
-                                onViewAllClick = { onNavigateToAllProducts(outingId) }
+                                onAddItemClick = { 
+                                    onNavigateToAddProducts(
+                                        outingId,
+                                        uiState.outingDetail!!.categoryId ?: 0L,
+                                        uiState.outingDetail!!.categoryName ?: ""
+                                    )
+                                },
+                                onViewAllClick = { 
+                                    onNavigateToAddProducts(
+                                        outingId,
+                                        uiState.outingDetail!!.categoryId ?: 0L,
+                                        uiState.outingDetail!!.categoryName ?: ""
+                                    )
+                                }
                             )
 
                             // Participants section
