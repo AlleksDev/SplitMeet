@@ -25,6 +25,7 @@ fun HomeHeader(
     title: String,
     modifier: Modifier = Modifier
 ) {
+    val logo = R.drawable.split
 
     Column(
         modifier = modifier
@@ -32,11 +33,11 @@ fun HomeHeader(
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        /*Image(
-            painter = painterResource(id = logoRes),
+        Image(
+            painter = painterResource(id = logo),
             contentDescription = "SplitMeet Logo",
             modifier = Modifier.height(32.dp)
-        )*/
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 

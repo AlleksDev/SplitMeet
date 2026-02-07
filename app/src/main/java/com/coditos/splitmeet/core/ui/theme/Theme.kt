@@ -258,8 +258,8 @@ val unspecified_scheme = ColorFamily(
 @Composable
 fun SplitMeetTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Dynamic color is available on Android 12+ - DISABLED to use custom orange/blue palette
+    dynamicColor: Boolean = false,
     content: @Composable() () -> Unit
 ) {
     val colorScheme = when {
