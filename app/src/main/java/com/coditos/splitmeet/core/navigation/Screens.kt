@@ -23,3 +23,6 @@ data class AddProducts(
     val categoryId: Long,
     val categoryName: String
 )
+
+@Serializable
+object Notifications

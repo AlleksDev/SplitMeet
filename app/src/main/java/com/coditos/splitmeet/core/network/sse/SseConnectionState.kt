@@ -1,4 +1,4 @@
-package com.coditos.splitmeet.features.notification.domain.entities
+package com.coditos.splitmeet.core.network.sse
 
 sealed class SseConnectionState {
     data object Connecting : SseConnectionState()

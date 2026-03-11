@@ -2,9 +2,11 @@ package com.coditos.splitmeet.core.di
 
 import com.coditos.splitmeet.core.hardware.data.AndroidAppVibrator
 import com.coditos.splitmeet.core.hardware.data.AndroidFingerPrintManager
+import com.coditos.splitmeet.core.hardware.data.AndroidHapticFeedbackManager
 import com.coditos.splitmeet.core.hardware.data.AndroidQrScanner
 import com.coditos.splitmeet.core.hardware.domain.AppVibrator
 import com.coditos.splitmeet.core.hardware.domain.FingerPrintManager
+import com.coditos.splitmeet.core.hardware.domain.HapticFeedbackManager
 import com.coditos.splitmeet.core.hardware.domain.QrScanner
 import dagger.Binds
 import dagger.Module
@@ -34,4 +36,10 @@ abstract class HardwareModule {
     abstract fun bindQrScanner(
         impl: AndroidQrScanner
     ): QrScanner
+
+    @Binds
+    @Singleton
+    abstract fun bindHapticFeedbackManager(
+        impl: AndroidHapticFeedbackManager
+    ): HapticFeedbackManager
 }

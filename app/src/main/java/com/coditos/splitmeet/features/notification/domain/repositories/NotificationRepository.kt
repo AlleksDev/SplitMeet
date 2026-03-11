@@ -1,21 +1,26 @@
 package com.coditos.splitmeet.features.notification.domain.repositories
 
 import com.coditos.splitmeet.features.notification.domain.entities.Notification
-import com.coditos.splitmeet.features.notification.domain.entities.SseConnectionState
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 
 interface NotificationRepository {
 
-    /** Emits each notification pushed by the SSE stream as it arrives. */
+    /** Real-time notifications parsed from the global SSE stream. */
     val notifications: SharedFlow<Notification>
 
-    /** Emits the current SSE connection state (Connecting, Connected, Error, Disconnected). */
-    val connectionState: Flow<SseConnectionState>
+    /** Starts listening to SSE events relevant to this feature. */
+    fun startListening()
 
-    /** Opens the SSE connection. Safe to call multiple times — will no-op if already connected. */
-    fun connect()
+    /** Stops listening and cleans up. */
+    fun stopListening()
 
-    /** Closes the SSE connection and releases resources. */
-    fun disconnect()
+    /** Fetches paginated notifications from the REST API. */
+    suspend fun getNotifications(page: Int, limit: Int): Result<List<Notification>>
+
+    /** Accept or reject a group invitation. */
+    suspend fun respondGroupInvitation(groupId: Long, accept: Boolean): Result<String>
+
+    /** Accept or reject an outing invitation. */
+    suspend fun respondOutingInvitation(outingId: Long, accept: Boolean): Result<String>
 }
+

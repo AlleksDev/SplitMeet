@@ -11,4 +11,9 @@ data class Notification(
     val outingName: String?,
     val isRead: Boolean,
     val createdAt: String
-)
+) {
+    /** True when the user can still accept or reject this notification. */
+    val isPending: Boolean
+        get() = type == NotificationType.GROUP_INVITATION ||
+                type == NotificationType.OUTING_INVITATION
+}
