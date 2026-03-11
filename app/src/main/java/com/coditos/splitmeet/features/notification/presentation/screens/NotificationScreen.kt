@@ -138,8 +138,6 @@ fun NotificationScreen(
     }
 }
 
-// ── Card ─────────────────────────────────────────────────────────────────────
-
 @Composable
 private fun NotificationCard(
     notification: Notification,
@@ -150,9 +148,9 @@ private fun NotificationCard(
     onReject: () -> Unit
 ) {
     val borderColor = if (notification.isPending && !isAccepted && !isRejected) {
-        Color(0xFFFF9500) // brand orange for pending invitations
+        Color(0xFFFF9500)
     } else {
-        Color(0xFFE0E0E0) // neutral for others
+        Color(0xFFE0E0E0)
     }
 
     Card(
@@ -169,7 +167,6 @@ private fun NotificationCard(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Message text
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = buildNotificationMessage(notification),
@@ -180,7 +177,6 @@ private fun NotificationCard(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Action area
             when {
                 isResponding -> {
                     CircularProgressIndicator(
@@ -244,8 +240,6 @@ private fun NotificationCard(
         }
     }
 }
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 @Composable
 private fun buildNotificationMessage(notification: Notification) = buildAnnotatedString {
