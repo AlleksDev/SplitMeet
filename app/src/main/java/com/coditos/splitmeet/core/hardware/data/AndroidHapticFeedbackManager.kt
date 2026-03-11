@@ -2,6 +2,8 @@ package com.coditos.splitmeet.core.hardware.data
 
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioManager
+import android.util.Log
 import com.coditos.splitmeet.core.hardware.domain.AppVibrator
 import com.coditos.splitmeet.core.hardware.domain.HapticFeedbackManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,22 +18,50 @@ class AndroidHapticFeedbackManager @Inject constructor(
 
     companion object {
         private const val NOTIFICATION_VIBRATION_MS = 200L
+        private const val TAG = "HapticManager"
     }
 
     override fun vibrateForNotification() {
-        if (!vibrator.hasVibrator()) return
-        if (isDoNotDisturbActive()) return
+        if (!vibrator.hasVibrator()) {
+            Log.w(TAG, "Vibración cancelada: El dispositivo no tiene hardware de vibración.")
+            return
+        }
 
+        if (isDoNotDisturbActive()) {
+            Log.w(TAG, "Vibración cancelada: El teléfono está en modo 'No Molestar'.")
+            return
+        }
+
+        if (isSilentModeActive()) {
+            Log.w(TAG, "Vibración cancelada: El teléfono está en modo 'Silencio Total'.")
+            return
+        }
+
+        Log.d(TAG, "¡Todo en orden! Mandando a vibrar por $NOTIFICATION_VIBRATION_MS ms")
         vibrator.vibrate(NOTIFICATION_VIBRATION_MS)
     }
 
-    /**
-     * Checks the system's Do Not Disturb (interruption filter).
-     * Returns true when DND blocks haptic alerts so the vibration must be suppressed.
-     */
     private fun isDoNotDisturbActive(): Boolean {
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-            ?: return false
-        return nm.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+        return try {
+            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                ?: return false
+
+            val filter = nm.currentInterruptionFilter
+            filter != NotificationManager.INTERRUPTION_FILTER_ALL &&
+                    filter != NotificationManager.INTERRUPTION_FILTER_UNKNOWN
+        } catch (e: Exception) {
+            Log.e(TAG, "Error leyendo el estado DND: ${e.message}")
+            false
+        }
+    }
+    private fun isSilentModeActive(): Boolean {
+        return try {
+            val am = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+                ?: return false
+            // RINGER_MODE_SILENT bloquea vibraciones. RINGER_MODE_VIBRATE sí permite vibrar.
+            am.ringerMode == AudioManager.RINGER_MODE_SILENT
+        } catch (e: Exception) {
+            false
+        }
     }
 }

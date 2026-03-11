@@ -46,8 +46,6 @@ class NotificationRepositoryImpl @Inject constructor(
     private var listenerScope: CoroutineScope? = null
     private var listenerJob: Job? = null
 
-    // ── SSE Listening ────────────────────────────────────────────────────
-
     @Synchronized
     override fun startListening() {
         if (listenerJob?.isActive == true) return
@@ -88,8 +86,6 @@ class NotificationRepositoryImpl @Inject constructor(
             Log.e(TAG, "Error parsing SSE notification: $json", e)
         }
     }
-
-    // ── REST API ─────────────────────────────────────────────────────────
 
     override suspend fun getNotifications(page: Int, limit: Int): Result<List<Notification>> {
         return try {

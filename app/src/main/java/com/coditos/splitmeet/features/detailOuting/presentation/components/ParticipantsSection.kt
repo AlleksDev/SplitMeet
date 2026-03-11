@@ -244,14 +244,16 @@ fun ParticipantCard(
             
             val statusText = when {
                 participant.isPaid -> "Pagado"
-                participant.isConfirmed -> "Admin"
+                participant.isConfirmed -> "Confirmado"
                 participant.isPending -> "Pendiente"
+                participant.isDeclined -> "Rechazado"
                 else -> participant.status
             }
             val statusColor = when {
                 participant.isPaid -> MaterialTheme.colorScheme.onPrimaryContainer
                 participant.isConfirmed -> MaterialTheme.colorScheme.secondary
                 participant.isPending -> MaterialTheme.colorScheme.tertiary
+                participant.isDeclined -> MaterialTheme.colorScheme.error
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             }
             

@@ -123,8 +123,8 @@ fun NotificationScreen(
                             NotificationCard(
                                 notification = notification,
                                 isResponding = notification.id in uiState.respondingIds,
-                                isAccepted = notification.id in uiState.acceptedIds,
-                                isRejected = notification.id in uiState.rejectedIds,
+                                localAccepted = notification.id in uiState.acceptedIds,
+                                localRejected = notification.id in uiState.rejectedIds,
                                 onAccept = { viewModel.respondToInvitation(notification, true) },
                                 onReject = { viewModel.respondToInvitation(notification, false) }
                             )
@@ -138,21 +138,23 @@ fun NotificationScreen(
     }
 }
 
-// ── Card ─────────────────────────────────────────────────────────────────────
-
 @Composable
 private fun NotificationCard(
     notification: Notification,
     isResponding: Boolean,
-    isAccepted: Boolean,
-    isRejected: Boolean,
+    localAccepted: Boolean,
+    localRejected: Boolean,
     onAccept: () -> Unit,
     onReject: () -> Unit
 ) {
+    // Combinar el estado del backend con el estado local (para respuestas recientes)
+    val isAccepted = notification.isAccepted || localAccepted
+    val isRejected = notification.isRejected || localRejected
+    
     val borderColor = if (notification.isPending && !isAccepted && !isRejected) {
-        Color(0xFFFF9500) // brand orange for pending invitations
+        Color(0xFFFF9500)
     } else {
-        Color(0xFFE0E0E0) // neutral for others
+        Color(0xFFE0E0E0)
     }
 
     Card(
@@ -169,7 +171,6 @@ private fun NotificationCard(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Message text
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = buildNotificationMessage(notification),
@@ -180,7 +181,6 @@ private fun NotificationCard(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Action area
             when {
                 isResponding -> {
                     CircularProgressIndicator(
@@ -244,8 +244,6 @@ private fun NotificationCard(
         }
     }
 }
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 @Composable
 private fun buildNotificationMessage(notification: Notification) = buildAnnotatedString {

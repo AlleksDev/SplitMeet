@@ -19,6 +19,9 @@ data class Participant(
     val isPaid: Boolean
         get() = status.equals("paid", ignoreCase = true)
     
+    val isDeclined: Boolean
+        get() = status.equals("declined", ignoreCase = true)
+    
     val displayInitial: Char
         get() = name.firstOrNull()?.uppercaseChar() ?: username.firstOrNull()?.uppercaseChar() ?: '?'
 }

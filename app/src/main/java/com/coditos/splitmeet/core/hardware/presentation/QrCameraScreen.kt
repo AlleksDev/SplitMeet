@@ -103,14 +103,16 @@ fun QrCameraScreen(
 
         Column(
             modifier = Modifier
-                .align(Alignment.Center)
-                .padding(top = 300.dp), // Padding debajo del retículo
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 120.dp)
+                .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Enfoque el código QR dentro del recuadro para escanear",
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
+                color = Color.White,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(

@@ -3,6 +3,7 @@ package com.coditos.splitmeet.features.notification.data.datasources.remote.mapp
 import com.coditos.splitmeet.features.notification.data.datasources.remote.model.NotificationDto
 import com.coditos.splitmeet.features.notification.domain.entities.Notification
 import com.coditos.splitmeet.features.notification.domain.entities.NotificationType
+import com.coditos.splitmeet.features.notification.domain.entities.ResponseStatus
 
 fun NotificationDto.toDomain(): Notification = Notification(
     id = id,
@@ -14,5 +15,6 @@ fun NotificationDto.toDomain(): Notification = Notification(
     groupName = groupName,
     outingName = outingName,
     isRead = isRead,
+    responseStatus = ResponseStatus.fromValue(responseStatus),
     createdAt = createdAt
 )
