@@ -46,8 +46,6 @@ interface SplitMeetApi {
     ): List<SearchUserDto>
 
     //Rutas para las salidas
-    @GET("outings/me")
-    suspend fun getOutings(): List<OutingDto>
 
     @GET("outings/{id}")
     suspend fun getOutingById(@Path("id") id: Long): OutingDetailDto
