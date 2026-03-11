@@ -25,7 +25,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,88 +54,84 @@ fun NotificationScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            // Header
-            Text(
-                text = "Notificaciones",
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
-            )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Text(
+            text = "Notificaciones",
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+        )
 
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.primary,
-                thickness = 2.dp
-            )
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.primary,
+            thickness = 2.dp
+        )
 
-            when {
-                uiState.isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    }
+        when {
+            uiState.isLoading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
+            }
 
-                uiState.notifications.isEmpty() -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "No tienes notificaciones",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+            uiState.notifications.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No tienes notificaciones",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
+            }
 
-                else -> {
-                    val grouped = uiState.notifications.groupBy { it.dateLabel() }
-                        .toSortedMap(compareByDescending { it })
+            else -> {
+                val grouped = uiState.notifications.groupBy { it.dateLabel() }
+                    .toSortedMap(compareByDescending { it })
 
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        grouped.forEach { (date, notifications) ->
-                            item {
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = date.formatAsHeader(),
-                                    style = MaterialTheme.typography.titleSmall.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 15.sp
-                                    ),
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                            }
-
-                            items(
-                                items = notifications,
-                                key = { it.id }
-                            ) { notification ->
-                                NotificationCard(
-                                    notification = notification,
-                                    isResponding = notification.id in uiState.respondingIds,
-                                    isAccepted = notification.id in uiState.acceptedIds,
-                                    isRejected = notification.id in uiState.rejectedIds,
-                                    onAccept = { viewModel.respondToInvitation(notification, true) },
-                                    onReject = { viewModel.respondToInvitation(notification, false) }
-                                )
-                            }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    grouped.forEach { (date, notifications) ->
+                        item {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = date.formatAsHeader(),
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp
+                                ),
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
                         }
 
-                        item { Spacer(modifier = Modifier.height(16.dp)) }
+                        items(
+                            items = notifications,
+                            key = { it.id }
+                        ) { notification ->
+                            NotificationCard(
+                                notification = notification,
+                                isResponding = notification.id in uiState.respondingIds,
+                                isAccepted = notification.id in uiState.acceptedIds,
+                                isRejected = notification.id in uiState.rejectedIds,
+                                onAccept = { viewModel.respondToInvitation(notification, true) },
+                                onReject = { viewModel.respondToInvitation(notification, false) }
+                            )
+                        }
                     }
+
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
                 }
             }
         }
