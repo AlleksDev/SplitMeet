@@ -1,6 +1,6 @@
 package com.coditos.splitmeet.features.auth.navigation
 
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -8,22 +8,17 @@ import com.coditos.splitmeet.core.navigation.FeatureNavGraph
 import com.coditos.splitmeet.core.navigation.Home
 import com.coditos.splitmeet.core.navigation.Login
 import com.coditos.splitmeet.core.navigation.Register
-import com.coditos.splitmeet.features.auth.di.AuthModule
 import com.coditos.splitmeet.features.auth.presentation.screens.LoginScreen
 import com.coditos.splitmeet.features.auth.presentation.screens.RegisterScreen
 import com.coditos.splitmeet.features.auth.presentation.viewmodels.AuthViewModel
 
-class AuthNavGraph(
-    private val authModule: AuthModule
-) : FeatureNavGraph {
+class AuthNavGraph : FeatureNavGraph {
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController
     ) {
         navGraphBuilder.composable<Login> {
-            val viewModel: AuthViewModel = viewModel(
-                factory = authModule.provideAuthViewModelFactory()
-            )
+            val viewModel: AuthViewModel = hiltViewModel()
             LoginScreen(
                 viewModel = viewModel,
                 onLoginSuccess = {
@@ -38,9 +33,7 @@ class AuthNavGraph(
         }
 
         navGraphBuilder.composable<Register> {
-            val viewModel: AuthViewModel = viewModel(
-                factory = authModule.provideAuthViewModelFactory()
-            )
+            val viewModel: AuthViewModel = hiltViewModel()
             RegisterScreen(
                 viewModel = viewModel,
                 onRegisterSuccess = {

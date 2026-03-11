@@ -13,7 +13,6 @@ import com.coditos.splitmeet.core.navigation.Home
 import com.coditos.splitmeet.core.navigation.Login
 import com.coditos.splitmeet.core.navigation.NavigationWrapper
 import com.coditos.splitmeet.core.ui.theme.SplitMeetTheme
-import com.coditos.splitmeet.features.auth.di.AuthModule
 import com.coditos.splitmeet.features.auth.navigation.AuthNavGraph
 import com.coditos.splitmeet.features.detailOuting.di.DetailOutingModule
 import com.coditos.splitmeet.features.detailOuting.navigation.DetailOutingNavGraph
@@ -22,8 +21,10 @@ import com.coditos.splitmeet.features.outing.di.OutingModule
 import com.coditos.splitmeet.features.outing.navigation.OutingNavGraph
 import com.coditos.splitmeet.features.product.di.ProductModule
 import com.coditos.splitmeet.features.product.navigation.ProductNavGraph
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var appContainer: AppContainer
@@ -32,14 +33,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         appContainer = AppContainer(this)
-        val authModule = AuthModule(appContainer)
         val outingModule = OutingModule(appContainer)
         val detailOutingModule = DetailOutingModule(appContainer)
         val productModule = ProductModule(appContainer)
 
         val navGraphs = listOf(
-            AuthNavGraph(authModule),
-            HomeNavGraph(homeModule),
+            AuthNavGraph(),
+            HomeNavGraph(),
             OutingNavGraph(outingModule),
             DetailOutingNavGraph(detailOutingModule),
             ProductNavGraph(productModule)

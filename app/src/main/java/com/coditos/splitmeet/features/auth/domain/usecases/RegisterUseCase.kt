@@ -3,8 +3,9 @@ package com.coditos.splitmeet.features.auth.domain.usecases
 import com.coditos.splitmeet.features.auth.data.datasoruces.remote.model.User
 import com.coditos.splitmeet.features.auth.domain.entities.RegisterResponse
 import com.coditos.splitmeet.features.auth.domain.repositories.AuthRepository
+import javax.inject.Inject
 
-class RegisterUseCase(
+class RegisterUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(user: User): Result<RegisterResponse> {

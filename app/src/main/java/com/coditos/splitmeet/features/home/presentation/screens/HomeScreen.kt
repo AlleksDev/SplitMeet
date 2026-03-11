@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coditos.splitmeet.features.auth.presentation.screens.LoginScreen
 import com.coditos.splitmeet.features.home.presentation.components.HomeHeader
@@ -41,7 +42,7 @@ import com.coditos.splitmeet.features.home.presentation.viewmodels.HomeViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
     onNavigateToCreateOuting: () -> Unit = {},
     onNavigateToOutingDetail: (Long) -> Unit = {}
