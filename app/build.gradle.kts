@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging)
+    implementation(libs.okhttp.sse)
 
     // Koin DI
     implementation(libs.koin.android)
