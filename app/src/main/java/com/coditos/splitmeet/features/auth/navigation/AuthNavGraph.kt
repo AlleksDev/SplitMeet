@@ -11,8 +11,9 @@ import com.coditos.splitmeet.core.navigation.Register
 import com.coditos.splitmeet.features.auth.presentation.screens.LoginScreen
 import com.coditos.splitmeet.features.auth.presentation.screens.RegisterScreen
 import com.coditos.splitmeet.features.auth.presentation.viewmodels.AuthViewModel
+import javax.inject.Inject
 
-class AuthNavGraph : FeatureNavGraph {
+class AuthNavGraph @Inject constructor() : FeatureNavGraph {
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController

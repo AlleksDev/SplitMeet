@@ -9,8 +9,9 @@ import com.coditos.splitmeet.core.navigation.FeatureNavGraph
 import com.coditos.splitmeet.core.navigation.OutingDetail
 import com.coditos.splitmeet.features.manageOuting.presentation.screens.CreateOutingScreen
 import com.coditos.splitmeet.features.manageOuting.presentation.viewmodels.ManageOutingViewModel
+import javax.inject.Inject
 
-class ManageOutingNavGraph : FeatureNavGraph {
+class ManageOutingNavGraph @Inject constructor() : FeatureNavGraph {
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController

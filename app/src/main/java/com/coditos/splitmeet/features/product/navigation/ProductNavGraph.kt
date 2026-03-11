@@ -10,8 +10,9 @@ import com.coditos.splitmeet.core.navigation.FeatureNavGraph
 import com.coditos.splitmeet.core.navigation.OutingDetail
 import com.coditos.splitmeet.features.product.presentation.screens.AddProductsScreen
 import com.coditos.splitmeet.features.product.presentation.viewmodels.AddProductsViewModel
+import javax.inject.Inject
 
-class ProductNavGraph : FeatureNavGraph {
+class ProductNavGraph @Inject constructor() : FeatureNavGraph {
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController

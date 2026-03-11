@@ -11,8 +11,9 @@ import com.coditos.splitmeet.core.navigation.Home
 import com.coditos.splitmeet.core.navigation.OutingDetail
 import com.coditos.splitmeet.features.detailOuting.presentation.screens.DetailOutingScreen
 import com.coditos.splitmeet.features.detailOuting.presentation.viewmodels.DetailOutingViewModel
+import javax.inject.Inject
 
-class DetailOutingNavGraph : FeatureNavGraph {
+class DetailOutingNavGraph @Inject constructor() : FeatureNavGraph {
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController
