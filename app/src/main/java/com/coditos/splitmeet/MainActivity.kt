@@ -32,7 +32,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         appContainer = AppContainer(this)
-        val homeModule = HomeModule(appContainer)
         val authModule = AuthModule(appContainer)
         val outingModule = OutingModule(appContainer)
         val detailOutingModule = DetailOutingModule(appContainer)
