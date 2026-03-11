@@ -17,6 +17,7 @@ import com.coditos.splitmeet.features.auth.navigation.AuthNavGraph
 import com.coditos.splitmeet.features.detailOuting.navigation.DetailOutingNavGraph
 import com.coditos.splitmeet.features.home.navigation.HomeNavGraph
 import com.coditos.splitmeet.features.manageOuting.navigation.ManageOutingNavGraph
+import com.coditos.splitmeet.features.outing.navigation.OutingNavGraph
 import com.coditos.splitmeet.features.product.di.ProductModule
 import com.coditos.splitmeet.features.product.navigation.ProductNavGraph
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
         val navGraphs = listOf(
             AuthNavGraph(),
             HomeNavGraph(),
+            OutingNavGraph(),
             ManageOutingNavGraph(),
             DetailOutingNavGraph(),
             ProductNavGraph(productModule)

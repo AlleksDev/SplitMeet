@@ -9,12 +9,15 @@ import com.coditos.splitmeet.features.outing.domain.entities.SplitType
 import com.coditos.splitmeet.features.outing.domain.usecases.CreateOutingUseCase
 import com.coditos.splitmeet.features.outing.domain.usecases.GetCategoriesUseCase
 import com.coditos.splitmeet.features.outing.presentation.screens.CreateOutingUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class OutingViewModel(
+@HiltViewModel
+class OutingViewModel @Inject constructor(
     private val createOutingUseCase: CreateOutingUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase
 ) : ViewModel() {
