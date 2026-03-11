@@ -1,6 +1,7 @@
 package com.coditos.splitmeet.core.di
 
 import com.coditos.splitmeet.core.network.interceptor.AuthInterceptor
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +16,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson = Gson()
 
     @Provides
     @Singleton
@@ -55,11 +60,11 @@ object NetworkModule {
     @Provides
     @Singleton
     @SplitmeetRetrofit
-    fun provideRetrofit(@SplitmeetRetrofit okHttpClient: OkHttpClient): Retrofit {
+    fun provideRetrofit(@SplitmeetRetrofit okHttpClient: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://frimeet.fun/")
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 }
