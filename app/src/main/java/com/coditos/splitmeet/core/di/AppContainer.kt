@@ -6,13 +6,6 @@ import com.coditos.splitmeet.core.network.SplitMeetApi
 import com.coditos.splitmeet.core.network.interceptor.AuthInterceptor
 import com.coditos.splitmeet.core.network.interceptor.provideLoggingInterceptor
 import com.coditos.splitmeet.core.storage.TokenDataStore
-import com.coditos.splitmeet.features.auth.data.repositories.AuthRepositoryImpl
-import com.coditos.splitmeet.features.auth.domain.repositories.AuthRepository
-import com.coditos.splitmeet.features.home.data.repositories.HomeRepositoryImpl
-import com.coditos.splitmeet.features.home.domain.repositories.HomeRepository
-import com.coditos.splitmeet.features.outing.data.repositories.OutingRepositoryImpl
-import com.coditos.splitmeet.features.outing.domain.repositories.OutingRepository
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -53,17 +46,5 @@ class AppContainer(context: Context) {
 
     val splitMeetApi: SplitMeetApi by lazy {
         retrofit.create(SplitMeetApi::class.java)
-    }
-
-    val homeRepository: HomeRepository by lazy {
-        HomeRepositoryImpl(splitMeetApi)
-    }
-
-    val authRepository: AuthRepository by lazy {
-        AuthRepositoryImpl(splitMeetApi)
-    }
-
-    val outingRepository: OutingRepository by lazy {
-        OutingRepositoryImpl(splitMeetApi)
     }
 }
