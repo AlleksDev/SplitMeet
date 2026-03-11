@@ -2,8 +2,9 @@ package com.coditos.splitmeet.features.product.domain.usecases
 
 import com.coditos.splitmeet.features.product.domain.entities.OutingProduct
 import com.coditos.splitmeet.features.product.domain.repositories.ProductRepository
+import javax.inject.Inject
 
-class GetOutingProductsUseCase(
+class GetOutingProductsUseCase @Inject constructor(
     private val repository: ProductRepository
 ) {
     suspend operator fun invoke(outingId: Long): Result<List<OutingProduct>> {

@@ -1,6 +1,5 @@
 package com.coditos.splitmeet.core.di
 
-import com.coditos.splitmeet.core.network.SplitMeetApi
 import com.coditos.splitmeet.core.network.interceptor.AuthInterceptor
 import dagger.Module
 import dagger.Provides
@@ -62,11 +61,5 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideSplitMeetApi(@SplitmeetRetrofit retrofit: Retrofit): SplitMeetApi {
-        return retrofit.create(SplitMeetApi::class.java)
     }
 }
