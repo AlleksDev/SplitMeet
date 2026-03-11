@@ -16,6 +16,7 @@ import com.coditos.splitmeet.core.hardware.presentation.QrCameraScreen
 import com.coditos.splitmeet.core.navigation.CreateOuting
 import com.coditos.splitmeet.core.navigation.FeatureNavGraph
 import com.coditos.splitmeet.core.navigation.Home
+import com.coditos.splitmeet.core.navigation.Login
 import com.coditos.splitmeet.core.navigation.MainScreen
 import com.coditos.splitmeet.core.navigation.OutingDetail
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +35,6 @@ class HomeNavGraph @Inject constructor(
             val context = LocalContext.current
 
             val showCameraFlow = remember { MutableStateFlow(false) }
-
             val showCamera by showCameraFlow.collectAsStateWithLifecycle()
 
             Box(modifier = Modifier.fillMaxSize()) {
@@ -48,6 +48,11 @@ class HomeNavGraph @Inject constructor(
                     },
                     onScanQrClick = {
                         showCameraFlow.update { true }
+                    },
+                    onLoggedOut = {
+                        navController.navigate(Login) {
+                            popUpTo(Home) { inclusive = true }
+                        }
                     }
                 )
 
@@ -56,12 +61,14 @@ class HomeNavGraph @Inject constructor(
                         qrScanner = qrScanner,
                         onQrDetected = { qrText ->
                             showCameraFlow.update { false }
-
                             Toast.makeText(context, "QR Leído: $qrText", Toast.LENGTH_LONG).show()
                         },
                         onError = { error ->
                             showCameraFlow.update { false }
                             Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                        },
+                        onNavigateBack = {
+                            showCameraFlow.update { false }
                         }
                     )
                 }

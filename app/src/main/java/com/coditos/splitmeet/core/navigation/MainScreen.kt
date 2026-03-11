@@ -25,12 +25,14 @@ import androidx.core.content.ContextCompat
 import com.coditos.splitmeet.R
 import com.coditos.splitmeet.features.home.presentation.screens.HomeScreen
 import com.coditos.splitmeet.features.notification.presentation.screens.NotificationScreen
+import com.coditos.splitmeet.features.profile.presentation.screens.ProfileScreen
 
 @Composable
 fun MainScreen(
     onNavigateToCreateOuting: () -> Unit,
     onNavigateToOutingDetail: (Long) -> Unit,
     onScanQrClick: () -> Unit
+    onLoggedOut: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
@@ -140,6 +142,7 @@ fun MainScreen(
                     onNavigateToOutingDetail = onNavigateToOutingDetail
                 )
                 2 -> NotificationScreen()
+                3 -> ProfileScreen(onLoggedOut = onLoggedOut)
             }
         }
     }
@@ -156,5 +159,5 @@ private val bottomNavItems = listOf(
     BottomNavItem("Inicio", Icons.Outlined.Home, Icons.Filled.Home, true),
     BottomNavItem("Grupos", Icons.Outlined.Groups, Icons.Filled.Groups, false),
     BottomNavItem("Notificaciones", Icons.Outlined.Notifications, Icons.Filled.Notifications, true),
-    BottomNavItem("Perfil", Icons.Outlined.AccountCircle, Icons.Filled.AccountCircle, false)
+    BottomNavItem("Perfil", Icons.Outlined.AccountCircle, Icons.Filled.AccountCircle, true)
 )

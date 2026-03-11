@@ -26,3 +26,6 @@ data class AddProducts(
 
 @Serializable
 object Notifications
+
+@Serializable
+object Profile
