@@ -14,7 +14,6 @@ import com.coditos.splitmeet.core.navigation.Login
 import com.coditos.splitmeet.core.navigation.NavigationWrapper
 import com.coditos.splitmeet.core.ui.theme.SplitMeetTheme
 import com.coditos.splitmeet.features.auth.navigation.AuthNavGraph
-import com.coditos.splitmeet.features.detailOuting.di.DetailOutingModule
 import com.coditos.splitmeet.features.detailOuting.navigation.DetailOutingNavGraph
 import com.coditos.splitmeet.features.home.navigation.HomeNavGraph
 import com.coditos.splitmeet.features.outing.di.OutingModule
@@ -34,14 +33,13 @@ class MainActivity : ComponentActivity() {
 
         appContainer = AppContainer(this)
         val outingModule = OutingModule(appContainer)
-        val detailOutingModule = DetailOutingModule(appContainer)
         val productModule = ProductModule(appContainer)
 
         val navGraphs = listOf(
             AuthNavGraph(),
             HomeNavGraph(),
             OutingNavGraph(outingModule),
-            DetailOutingNavGraph(detailOutingModule),
+            DetailOutingNavGraph(),
             ProductNavGraph(productModule)
         )
 

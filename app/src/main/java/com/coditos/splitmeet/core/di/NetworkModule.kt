@@ -55,6 +55,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @SplitmeetRetrofit
     fun provideRetrofit(@SplitmeetRetrofit okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://frimeet.fun/")
@@ -65,7 +66,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideSplitMeetApi(retrofit: Retrofit): SplitMeetApi {
+    fun provideSplitMeetApi(@SplitmeetRetrofit retrofit: Retrofit): SplitMeetApi {
         return retrofit.create(SplitMeetApi::class.java)
     }
 }

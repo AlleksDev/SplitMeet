@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.AddParticipantUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.DeleteOutingUseCase
+import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetCategoriesUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetOutingDetailUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetOutingItemsUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetParticipantsUseCase
@@ -12,15 +13,17 @@ import com.coditos.splitmeet.features.detailOuting.domain.usecases.SearchUsersUs
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.UpdateOutingUseCase
 import com.coditos.splitmeet.features.detailOuting.presentation.screens.DetailOutingUiState
 import com.coditos.splitmeet.features.outing.domain.entities.Category
-import com.coditos.splitmeet.features.outing.domain.usecases.GetCategoriesUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DetailOutingViewModel(
+@HiltViewModel
+class DetailOutingViewModel @Inject constructor(
     private val getOutingDetailUseCase: GetOutingDetailUseCase,
     private val getParticipantsUseCase: GetParticipantsUseCase,
     private val getOutingItemsUseCase: GetOutingItemsUseCase,
