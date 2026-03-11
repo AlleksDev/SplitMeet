@@ -12,5 +12,6 @@ data class NotificationDto(
     @SerializedName("group_name") val groupName: String?,
     @SerializedName("outing_name") val outingName: String?,
     @SerializedName("is_read") val isRead: Boolean,
+    @SerializedName("response_status") val responseStatus: String?,
     @SerializedName("created_at") val createdAt: String
 )

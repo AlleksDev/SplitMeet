@@ -123,8 +123,8 @@ fun NotificationScreen(
                             NotificationCard(
                                 notification = notification,
                                 isResponding = notification.id in uiState.respondingIds,
-                                isAccepted = notification.id in uiState.acceptedIds,
-                                isRejected = notification.id in uiState.rejectedIds,
+                                localAccepted = notification.id in uiState.acceptedIds,
+                                localRejected = notification.id in uiState.rejectedIds,
                                 onAccept = { viewModel.respondToInvitation(notification, true) },
                                 onReject = { viewModel.respondToInvitation(notification, false) }
                             )
@@ -142,11 +142,15 @@ fun NotificationScreen(
 private fun NotificationCard(
     notification: Notification,
     isResponding: Boolean,
-    isAccepted: Boolean,
-    isRejected: Boolean,
+    localAccepted: Boolean,
+    localRejected: Boolean,
     onAccept: () -> Unit,
     onReject: () -> Unit
 ) {
+    // Combinar el estado del backend con el estado local (para respuestas recientes)
+    val isAccepted = notification.isAccepted || localAccepted
+    val isRejected = notification.isRejected || localRejected
+    
     val borderColor = if (notification.isPending && !isAccepted && !isRejected) {
         Color(0xFFFF9500)
     } else {
