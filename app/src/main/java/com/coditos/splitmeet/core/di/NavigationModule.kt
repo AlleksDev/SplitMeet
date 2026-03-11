@@ -3,6 +3,7 @@ package com.coditos.splitmeet.core.di
 import com.coditos.splitmeet.core.navigation.FeatureNavGraph
 import com.coditos.splitmeet.features.auth.navigation.AuthNavGraph
 import com.coditos.splitmeet.features.detailOuting.navigation.DetailOutingNavGraph
+import com.coditos.splitmeet.features.group.navigation.GroupNavGraph
 import com.coditos.splitmeet.features.home.navigation.HomeNavGraph
 import com.coditos.splitmeet.features.manageOuting.navigation.ManageOutingNavGraph
 import com.coditos.splitmeet.features.notification.navigation.NotificationNavGraph
@@ -45,4 +46,8 @@ abstract class NavigationModule {
     @Binds
     @IntoSet
     abstract fun bindNotificationNavGraph(impl: NotificationNavGraph): FeatureNavGraph
+
+    @Binds
+    @IntoSet
+    abstract fun bindGroupNavGraph(impl: GroupNavGraph): FeatureNavGraph
 }

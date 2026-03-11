@@ -29,3 +29,9 @@ object Notifications
 
 @Serializable
 object Profile
+
+@Serializable
+object CreateGroup
+
+@Serializable
+data class GroupDetail(val groupId: Long)

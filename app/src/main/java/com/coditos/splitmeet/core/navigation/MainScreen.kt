@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.coditos.splitmeet.R
+import com.coditos.splitmeet.features.group.presentation.screens.GroupsScreen
 import com.coditos.splitmeet.features.home.presentation.screens.HomeScreen
 import com.coditos.splitmeet.features.notification.presentation.screens.NotificationScreen
 import com.coditos.splitmeet.features.profile.presentation.screens.ProfileScreen
@@ -30,7 +31,9 @@ import com.coditos.splitmeet.features.profile.presentation.screens.ProfileScreen
 @Composable
 fun MainScreen(
     onNavigateToCreateOuting: () -> Unit,
+    onNavigateToCreateGroup: () -> Unit,
     onNavigateToOutingDetail: (Long) -> Unit,
+    onNavigateToGroupDetail: (Long) -> Unit,
     onScanQrClick: () -> Unit,
     onLoggedOut: () -> Unit = {}
 ) {
@@ -120,14 +123,17 @@ fun MainScreen(
             }
         },
         floatingActionButton = {
-            if (selectedTab == 0) {
+            if (selectedTab == 0 || selectedTab == 1) {
                 FloatingActionButton(
-                    onClick = onNavigateToCreateOuting,
+                    onClick = {
+                        if (selectedTab == 0) onNavigateToCreateOuting()
+                        else onNavigateToCreateGroup()
+                    },
                     containerColor = Color(0xFFE67E22),
                     contentColor = Color.White,
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Crear salida")
+                    Icon(Icons.Default.Add, contentDescription = if (selectedTab == 0) "Crear salida" else "Crear grupo")
                 }
             }
         }
@@ -140,6 +146,9 @@ fun MainScreen(
             when (selectedTab) {
                 0 -> HomeScreen(
                     onNavigateToOutingDetail = onNavigateToOutingDetail
+                )
+                1 -> GroupsScreen(
+                    onNavigateToDetail = onNavigateToGroupDetail
                 )
                 2 -> NotificationScreen()
                 3 -> ProfileScreen(onLoggedOut = onLoggedOut)
@@ -157,7 +166,7 @@ private data class BottomNavItem(
 
 private val bottomNavItems = listOf(
     BottomNavItem("Inicio", Icons.Outlined.Home, Icons.Filled.Home, true),
-    BottomNavItem("Grupos", Icons.Outlined.Groups, Icons.Filled.Groups, false),
+    BottomNavItem("Grupos", Icons.Outlined.Groups, Icons.Filled.Groups, true),
     BottomNavItem("Notificaciones", Icons.Outlined.Notifications, Icons.Filled.Notifications, true),
     BottomNavItem("Perfil", Icons.Outlined.AccountCircle, Icons.Filled.AccountCircle, true)
 )
