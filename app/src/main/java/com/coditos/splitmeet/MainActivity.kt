@@ -17,7 +17,6 @@ import com.coditos.splitmeet.features.auth.di.AuthModule
 import com.coditos.splitmeet.features.auth.navigation.AuthNavGraph
 import com.coditos.splitmeet.features.detailOuting.di.DetailOutingModule
 import com.coditos.splitmeet.features.detailOuting.navigation.DetailOutingNavGraph
-import com.coditos.splitmeet.features.home.di.HomeModule
 import com.coditos.splitmeet.features.home.navigation.HomeNavGraph
 import com.coditos.splitmeet.features.outing.di.OutingModule
 import com.coditos.splitmeet.features.outing.navigation.OutingNavGraph
