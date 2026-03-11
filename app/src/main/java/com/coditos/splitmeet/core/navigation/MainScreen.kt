@@ -1,49 +1,27 @@
 package com.coditos.splitmeet.core.navigation
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Groups
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.QrCodeScanner
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.coditos.splitmeet.R
 import com.coditos.splitmeet.features.home.presentation.screens.HomeScreen
 import com.coditos.splitmeet.features.notification.presentation.screens.NotificationScreen
@@ -53,9 +31,21 @@ import com.coditos.splitmeet.features.profile.presentation.screens.ProfileScreen
 fun MainScreen(
     onNavigateToCreateOuting: () -> Unit,
     onNavigateToOutingDetail: (Long) -> Unit,
+    onScanQrClick: () -> Unit
     onLoggedOut: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
+
+    val context = LocalContext.current
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            onScanQrClick()
+        } else {
+            Toast.makeText(context, "Se necesita acceso a la cámara para escanear el QR", Toast.LENGTH_LONG).show()
+        }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -74,7 +64,19 @@ fun MainScreen(
                         modifier = Modifier.height(32.dp)
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { /* TODO: QR Scanner */ }) {
+
+                    IconButton(onClick = {
+                        val permissionCheckResult = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.CAMERA
+                        )
+
+                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                            onScanQrClick()
+                        } else {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Outlined.QrCodeScanner,
                             contentDescription = "Escanear QR",
