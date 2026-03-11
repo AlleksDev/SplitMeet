@@ -1,6 +1,6 @@
 package com.coditos.splitmeet.features.detailOuting.data.repositories
 
-import com.coditos.splitmeet.core.network.SplitMeetApi
+import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.api.DetailOutingApi
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.mapper.toDomain
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.mapper.toDomainList
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.AddParticipantRequest
@@ -10,9 +10,12 @@ import com.coditos.splitmeet.features.detailOuting.domain.entities.OutingItem
 import com.coditos.splitmeet.features.detailOuting.domain.entities.Participant
 import com.coditos.splitmeet.features.detailOuting.domain.entities.SearchUser
 import com.coditos.splitmeet.features.detailOuting.domain.repositories.DetailOutingRepository
+import com.coditos.splitmeet.features.outing.data.datasources.remote.mapper.toDomainList as toCategoryDomainList
+import com.coditos.splitmeet.features.outing.domain.entities.Category
+import javax.inject.Inject
 
-class DetailOutingRepositoryImpl(
-    private val api: SplitMeetApi
+class DetailOutingRepositoryImpl @Inject constructor(
+    private val api: DetailOutingApi
 ) : DetailOutingRepository {
 
     override suspend fun getOutingDetail(outingId: Long): OutingDetail {
@@ -62,5 +65,10 @@ class DetailOutingRepositoryImpl(
 
     override suspend fun deleteOuting(outingId: Long) {
         api.deleteOuting(outingId)
+    }
+
+    override suspend fun getCategories(): List<Category> {
+        val response = api.getCategories()
+        return response.toCategoryDomainList()
     }
 }

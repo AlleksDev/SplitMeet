@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.coditos.splitmeet.features.detailOuting.presentation.components.AddParticipantModal
 import com.coditos.splitmeet.features.detailOuting.presentation.components.ConsumptionSection
 import com.coditos.splitmeet.features.detailOuting.presentation.components.DeleteConfirmationDialog
@@ -53,7 +54,7 @@ import com.coditos.splitmeet.features.detailOuting.presentation.viewmodels.Detai
 @Composable
 fun DetailOutingScreen(
     outingId: Long,
-    viewModel: DetailOutingViewModel,
+    viewModel: DetailOutingViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToAddProducts: (outingId: Long, categoryId: Long, categoryName: String) -> Unit = { _, _, _ -> }
 ) {

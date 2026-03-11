@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coditos.splitmeet.features.auth.data.datasoruces.remote.model.LoginRequest
 import com.coditos.splitmeet.features.auth.presentation.components.AuthButton
@@ -32,7 +33,7 @@ import com.coditos.splitmeet.features.auth.presentation.viewmodels.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
+    viewModel: AuthViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
     onLoginSuccess: () -> Unit = {},
     onNavigateToRegister: () -> Unit = {}

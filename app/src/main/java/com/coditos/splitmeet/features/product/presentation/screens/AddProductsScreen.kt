@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.coditos.splitmeet.features.product.presentation.components.AddProductModal
 import com.coditos.splitmeet.features.product.presentation.components.ProductItemCard
 import com.coditos.splitmeet.features.product.presentation.components.TotalCard
@@ -58,7 +59,7 @@ fun AddProductsScreen(
     outingId: Long,
     categoryId: Long,
     categoryName: String,
-    viewModel: AddProductsViewModel,
+    viewModel: AddProductsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onFinish: () -> Unit
 ) {

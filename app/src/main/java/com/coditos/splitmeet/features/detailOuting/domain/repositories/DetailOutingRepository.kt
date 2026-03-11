@@ -4,6 +4,7 @@ import com.coditos.splitmeet.features.detailOuting.domain.entities.OutingDetail
 import com.coditos.splitmeet.features.detailOuting.domain.entities.OutingItem
 import com.coditos.splitmeet.features.detailOuting.domain.entities.Participant
 import com.coditos.splitmeet.features.detailOuting.domain.entities.SearchUser
+import com.coditos.splitmeet.features.outing.domain.entities.Category
 
 interface DetailOutingRepository {
     suspend fun getOutingDetail(outingId: Long): OutingDetail
@@ -20,4 +21,5 @@ interface DetailOutingRepository {
         splitType: String
     ): OutingDetail
     suspend fun deleteOuting(outingId: Long)
+    suspend fun getCategories(): List<Category>
 }

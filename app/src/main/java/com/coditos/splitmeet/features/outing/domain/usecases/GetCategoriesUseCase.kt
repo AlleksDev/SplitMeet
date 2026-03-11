@@ -2,8 +2,9 @@ package com.coditos.splitmeet.features.outing.domain.usecases
 
 import com.coditos.splitmeet.features.outing.domain.entities.Category
 import com.coditos.splitmeet.features.outing.domain.repositories.OutingRepository
+import javax.inject.Inject
 
-class GetCategoriesUseCase(
+class GetCategoriesUseCase @Inject constructor(
     private val repository: OutingRepository
 ) {
     suspend operator fun invoke(): Result<List<Category>> {
