@@ -31,7 +31,7 @@ import com.coditos.splitmeet.features.profile.presentation.screens.ProfileScreen
 fun MainScreen(
     onNavigateToCreateOuting: () -> Unit,
     onNavigateToOutingDetail: (Long) -> Unit,
-    onScanQrClick: () -> Unit
+    onScanQrClick: () -> Unit,
     onLoggedOut: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
