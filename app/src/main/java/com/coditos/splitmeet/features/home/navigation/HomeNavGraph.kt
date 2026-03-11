@@ -13,8 +13,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.coditos.splitmeet.core.hardware.data.AndroidQrScanner
 import com.coditos.splitmeet.core.hardware.presentation.QrCameraScreen
+import com.coditos.splitmeet.core.navigation.CreateGroup
 import com.coditos.splitmeet.core.navigation.CreateOuting
 import com.coditos.splitmeet.core.navigation.FeatureNavGraph
+import com.coditos.splitmeet.core.navigation.GroupDetail
 import com.coditos.splitmeet.core.navigation.Home
 import com.coditos.splitmeet.core.navigation.Login
 import com.coditos.splitmeet.core.navigation.MainScreen
@@ -43,8 +45,14 @@ class HomeNavGraph @Inject constructor(
                     onNavigateToCreateOuting = {
                         navController.navigate(CreateOuting)
                     },
+                    onNavigateToCreateGroup = {
+                        navController.navigate(CreateGroup)
+                    },
                     onNavigateToOutingDetail = { outingId ->
                         navController.navigate(OutingDetail(outingId))
+                    },
+                    onNavigateToGroupDetail = { groupId ->
+                        navController.navigate(GroupDetail(groupId))
                     },
                     onScanQrClick = {
                         showCameraFlow.update { true }
