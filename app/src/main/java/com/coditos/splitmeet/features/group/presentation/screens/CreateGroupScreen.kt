@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -22,21 +21,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coditos.splitmeet.core.ui.components.SplitMeetTopBar
 import com.coditos.splitmeet.features.group.presentation.viewmodels.CreateGroupViewModel
 import com.coditos.splitmeet.features.outing.presentation.components.OutingButton
 import com.coditos.splitmeet.features.outing.presentation.components.OutingDescriptionField
-import com.coditos.splitmeet.features.outing.presentation.components.OutingHeader
 import com.coditos.splitmeet.features.outing.presentation.components.OutingTextField
 
 @Composable
 fun CreateGroupScreen(
     viewModel: CreateGroupViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
-    onGroupCreated: () -> Unit = {}
+    onGroupCreated: () -> Unit = {},
+    onNavigateBack: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -59,7 +58,15 @@ fun CreateGroupScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            SplitMeetTopBar(
+                title = "Nuevo grupo",
+                showLogo = false,
+                showBackButton = true,
+                onBackClick = onNavigateBack
+            )
+        }
     ) { paddingValues ->
         Surface(
             modifier = modifier
@@ -70,14 +77,6 @@ fun CreateGroupScreen(
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                OutingHeader(title = "Nuevo grupo")
-
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = Color(0xFFE0E0E0)
-                )
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
