@@ -18,7 +18,8 @@ class GroupNavGraph @Inject constructor() : FeatureNavGraph {
     ) {
         navGraphBuilder.composable<CreateGroup> {
             CreateGroupScreen(
-                onGroupCreated = { navController.popBackStack() }
+                onGroupCreated = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

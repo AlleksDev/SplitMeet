@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -60,14 +59,14 @@ fun GroupInfoHeader(
             Icon(
                 imageVector = Icons.Outlined.Edit,
                 contentDescription = "Editar",
-                tint = Color(0xFFFF9500)
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         IconButton(onClick = onDelete) {
             Icon(
                 imageVector = Icons.Outlined.Delete,
                 contentDescription = "Eliminar",
-                tint = Color(0xFFE53935)
+                tint = MaterialTheme.colorScheme.error
             )
         }
     }
