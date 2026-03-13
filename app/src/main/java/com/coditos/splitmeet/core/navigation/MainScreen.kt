@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -18,11 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import com.coditos.splitmeet.R
+import com.coditos.splitmeet.core.ui.components.SplitMeetTopBar
 import com.coditos.splitmeet.features.group.presentation.screens.GroupsScreen
 import com.coditos.splitmeet.features.home.presentation.screens.HomeScreen
 import com.coditos.splitmeet.features.notification.presentation.screens.NotificationScreen
@@ -53,46 +51,35 @@ fun MainScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.split),
-                        contentDescription = "SplitMeet Logo",
-                        modifier = Modifier.height(32.dp)
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
+            val isHomeTab = selectedTab == 0
+            val currentTitle = bottomNavItems[selectedTab].label
 
-                    IconButton(onClick = {
-                        val permissionCheckResult = ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.CAMERA
-                        )
+            SplitMeetTopBar(
+                title = currentTitle,
+                showLogo = isHomeTab,
+                showBackButton = false,
+                actions = {
+                    if (isHomeTab) {
+                        IconButton(onClick = {
+                            val permissionCheckResult = ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.CAMERA
+                            )
 
-                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                            onScanQrClick()
-                        } else {
-                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                                onScanQrClick()
+                            } else {
+                                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.QrCodeScanner,
+                                contentDescription = "Escanear QR"
+                            )
                         }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Outlined.QrCodeScanner,
-                            contentDescription = "Escanear QR",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
                     }
                 }
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+            )
         },
         bottomBar = {
             NavigationBar(
