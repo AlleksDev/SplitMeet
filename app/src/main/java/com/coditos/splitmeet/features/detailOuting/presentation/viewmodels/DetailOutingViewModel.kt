@@ -4,15 +4,19 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.AddParticipantUseCase
+import com.coditos.splitmeet.features.detailOuting.domain.usecases.ConfirmPaymentUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.DeleteOutingUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetCategoriesUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetOutingDetailUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetOutingItemsUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetParticipantsUseCase
+import com.coditos.splitmeet.features.detailOuting.domain.usecases.RemoveParticipantUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.SearchUsersUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.UpdateOutingUseCase
+import com.coditos.splitmeet.features.detailOuting.domain.entities.Participant
+import com.coditos.splitmeet.core.hardware.domain.FingerPrintManager
+import com.coditos.splitmeet.features.profile.domain.usecases.GetProfileUseCase
 import com.coditos.splitmeet.features.detailOuting.presentation.screens.DetailOutingUiState
-import com.coditos.splitmeet.features.outing.domain.entities.Category
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,9 +34,13 @@ class DetailOutingViewModel @Inject constructor(
     private val getOutingItemsUseCase: GetOutingItemsUseCase,
     private val searchUsersUseCase: SearchUsersUseCase,
     private val addParticipantUseCase: AddParticipantUseCase,
+    private val confirmPaymentUseCase: ConfirmPaymentUseCase,
+    private val removeParticipantUseCase: RemoveParticipantUseCase,
     private val updateOutingUseCase: UpdateOutingUseCase,
     private val deleteOutingUseCase: DeleteOutingUseCase,
-    private val getCategoriesUseCase: GetCategoriesUseCase
+    private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val getProfileUseCase: GetProfileUseCase,
+    private val fingerPrintManager: FingerPrintManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailOutingUiState())
@@ -59,6 +68,13 @@ class DetailOutingViewModel @Inject constructor(
                     _uiState.update { it.copy(error = error.message) }
                 }
             )
+
+            // Check if current user is the creator
+            val profileResult = getProfileUseCase()
+            profileResult.onSuccess { profile ->
+                val isCreator = _uiState.value.outingDetail?.creatorId == profile.id
+                _uiState.update { it.copy(isCreator = isCreator) }
+            }
 
             // Load participants
             loadParticipants()
@@ -195,6 +211,121 @@ class DetailOutingViewModel @Inject constructor(
                             addingParticipantId = null,
                             addParticipantError = error.message ?: "Error al agregar participante"
                         ) 
+                    }
+                }
+            )
+        }
+    }
+
+    fun confirmPayment(participant: Participant) {
+        if (!participant.isPaymentPending) return
+
+        if (fingerPrintManager.hasEnrolledFingerPrints()) {
+            _uiState.update { it.copy(requireBiometricAuth = participant) }
+        } else {
+            executeConfirmPayment(participant)
+        }
+    }
+
+    fun onBiometricAuthDismissed() {
+        _uiState.update { it.copy(requireBiometricAuth = null) }
+    }
+
+    fun onBiometricAuthError(errorMessage: String) {
+        _uiState.update {
+            it.copy(
+                requireBiometricAuth = null,
+                error = "Error biométrico: $errorMessage"
+            )
+        }
+    }
+
+    fun onBiometricAuthFailed() {
+        _uiState.update {
+            it.copy(
+                requireBiometricAuth = null,
+                error = "Autenticación biométrica fallida."
+            )
+        }
+    }
+
+    fun executeConfirmPayment(participant: Participant) {
+        val paymentId = participant.paymentId ?: participant.id
+        _uiState.update { it.copy(confirmingPaymentUserId = participant.userId, error = null) }
+
+        viewModelScope.launch {
+            val result = confirmPaymentUseCase(paymentId)
+
+            result.fold(
+                onSuccess = {
+                    _uiState.update { it.copy(confirmingPaymentUserId = null, selectedParticipantId = null) }
+                    loadParticipants()
+                    showSuccessMessage("Pago confirmado para @${participant.username}")
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            confirmingPaymentUserId = null,
+                            error = mapOperationError(error)
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    fun requestRemoveParticipant(participant: Participant) {
+        _uiState.update {
+            it.copy(
+                showRemoveParticipantDialog = true,
+                participantToRemove = participant
+            )
+        }
+    }
+
+    fun dismissRemoveParticipantDialog() {
+        if (_uiState.value.removingParticipantUserId != null) return
+        _uiState.update {
+            it.copy(
+                showRemoveParticipantDialog = false,
+                participantToRemove = null
+            )
+        }
+    }
+
+    fun removeSelectedParticipant() {
+        val participant = _uiState.value.participantToRemove ?: return
+        _uiState.update {
+            it.copy(
+                removingParticipantUserId = participant.userId,
+                error = null
+            )
+        }
+
+        viewModelScope.launch {
+            val result = removeParticipantUseCase(outingId, participant.userId)
+
+            result.fold(
+                onSuccess = {
+                    _uiState.update {
+                        it.copy(
+                            removingParticipantUserId = null,
+                            showRemoveParticipantDialog = false,
+                            participantToRemove = null,
+                            selectedParticipantId = null
+                        )
+                    }
+                    loadParticipants()
+                    showSuccessMessage("Participante eliminado")
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            removingParticipantUserId = null,
+                            showRemoveParticipantDialog = false,
+                            participantToRemove = null,
+                            error = mapOperationError(error)
+                        )
                     }
                 }
             )
@@ -354,5 +485,28 @@ class DetailOutingViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(error = null, addParticipantError = null) }
+    }
+
+    // Participant selection functions
+    fun selectParticipant(participantId: Long) {
+        _uiState.update {
+            if (it.selectedParticipantId == participantId) {
+                it.copy(selectedParticipantId = null)
+            } else {
+                it.copy(selectedParticipantId = participantId)
+            }
+        }
+    }
+
+    fun clearParticipantSelection() {
+        _uiState.update { it.copy(selectedParticipantId = null) }
+    }
+
+    private fun mapOperationError(error: Throwable): String {
+        return when ((error as? HttpException)?.code()) {
+            401 -> "Tu sesión expiró. Inicia sesión nuevamente."
+            400 -> error.message ?: "No se pudo completar la operación."
+            else -> error.message ?: "Ocurrió un error de red."
+        }
     }
 }

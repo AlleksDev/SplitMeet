@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,6 +47,7 @@ import com.coditos.splitmeet.features.detailOuting.presentation.components.Delet
 import com.coditos.splitmeet.features.detailOuting.presentation.components.EditOutingModal
 import com.coditos.splitmeet.features.detailOuting.presentation.components.OutingInfoCard
 import com.coditos.splitmeet.features.detailOuting.presentation.components.ParticipantsSection
+import com.coditos.splitmeet.features.detailOuting.presentation.components.RemoveParticipantConfirmationDialog
 import com.coditos.splitmeet.features.detailOuting.presentation.viewmodels.DetailOutingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,6 +78,48 @@ fun DetailOutingScreen(
         if (uiState.showSuccessMessage && uiState.successMessage != null) {
             snackbarHostState.showSnackbar(uiState.successMessage!!)
             viewModel.hideSuccessMessage()
+        }
+    }
+
+    // Show operation errors in Snackbar
+    LaunchedEffect(uiState.error) {
+        if (uiState.error != null && uiState.outingDetail != null) {
+            snackbarHostState.showSnackbar(uiState.error!!)
+            viewModel.clearError()
+        }
+    }
+
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val hardwareEntryPoint = remember(context) {
+        dagger.hilt.android.EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            com.coditos.splitmeet.core.hardware.domain.FingerPrintManagerEntryPoint::class.java
+        )
+    }
+    val fingerPrintManager = hardwareEntryPoint.getFingerPrintManager()
+
+    LaunchedEffect(uiState.requireBiometricAuth) {
+        val participant = uiState.requireBiometricAuth
+        if (participant != null) {
+            val activity = context as? androidx.fragment.app.FragmentActivity
+            if (activity != null) {
+                fingerPrintManager.authenticate(
+                    activity = activity,
+                    onSuccess = {
+                        viewModel.onBiometricAuthDismissed()
+                        viewModel.executeConfirmPayment(participant)
+                    },
+                    onError = { _, errorMessage ->
+                        viewModel.onBiometricAuthError(errorMessage)
+                    },
+                    onFailed = {
+                        viewModel.onBiometricAuthFailed()
+                    }
+                )
+            } else {
+                viewModel.onBiometricAuthDismissed()
+                viewModel.executeConfirmPayment(participant)
+            }
         }
     }
 
@@ -222,9 +264,15 @@ fun DetailOutingScreen(
                                 participants = uiState.participants,
                                 paidCount = uiState.paidParticipantsCount,
                                 totalCount = uiState.participants.size,
+                                canRemoveParticipants = uiState.outingDetail?.isEditable == true,
+                                isCreator = uiState.isCreator,
+                                selectedParticipantId = uiState.selectedParticipantId,
+                                confirmingPaymentUserId = uiState.confirmingPaymentUserId,
+                                removingParticipantUserId = uiState.removingParticipantUserId,
+                                onParticipantClick = { viewModel.selectParticipant(it) },
                                 onAddParticipantClick = { viewModel.showAddParticipantModal() },
-                                onMarkAsPaid = { /* TODO: Mark as paid */ },
-                                onRemoveParticipant = { /* TODO: Remove participant */ }
+                                onMarkAsPaid = { participant -> viewModel.confirmPayment(participant) },
+                                onRemoveParticipant = { participant -> viewModel.requestRemoveParticipant(participant) }
                             )
 
                             // Bottom spacing
@@ -274,6 +322,14 @@ fun DetailOutingScreen(
                     isDeleting = uiState.isDeleting,
                     onConfirm = { viewModel.deleteOuting() },
                     onDismiss = { viewModel.hideDeleteConfirmation() }
+                )
+
+                RemoveParticipantConfirmationDialog(
+                    isVisible = uiState.showRemoveParticipantDialog,
+                    participantName = uiState.participantToRemove?.name ?: "este participante",
+                    isRemoving = uiState.removingParticipantUserId != null,
+                    onConfirm = { viewModel.removeSelectedParticipant() },
+                    onDismiss = { viewModel.dismissRemoveParticipantDialog() }
                 )
             }
         }

@@ -24,12 +24,11 @@ class AndroidFingerPrintManager @Inject constructor(
     }
 
     override fun authenticate(
+        activity: FragmentActivity,
         onSuccess: () -> Unit,
         onError: (errorCode: Int, errorMessage: String) -> Unit,
         onFailed: () -> Unit
     ) {
-        val activity = context as? FragmentActivity ?: return
-
         val executor = ContextCompat.getMainExecutor(context)
 
         val callback = object : BiometricPrompt.AuthenticationCallback() {

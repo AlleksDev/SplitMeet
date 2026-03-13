@@ -39,6 +39,15 @@ interface DetailOutingApi {
         @Body request: AddParticipantRequest
     ): AddParticipantResponse
 
+    @DELETE("outings/{outingId}/participants/{userId}")
+    suspend fun removeParticipant(
+        @Path("outingId") outingId: Long,
+        @Path("userId") userId: Long
+    )
+
+    @PATCH("payments/{id}/confirm")
+    suspend fun confirmPayment(@Path("id") paymentId: Long)
+
     @GET("outings/{id}/items")
     suspend fun getOutingItems(@Path("id") outingId: Long): List<OutingItemDto>
 
