@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coditos.splitmeet.features.profile.presentation.components.EditProfileDialog
 import com.coditos.splitmeet.features.profile.presentation.components.ProfileContent
 import com.coditos.splitmeet.features.profile.presentation.viewmodels.ProfileViewModel
 
@@ -60,9 +61,23 @@ fun ProfileScreen(
                 ProfileContent(
                     profile = uiState.profile!!,
                     onLogout = { viewModel.logout() },
-                    onEdit = { }
+                    onEdit = { viewModel.showEditDialog() }
                 )
             }
         }
+    }
+
+    if (uiState.showEditDialog) {
+        EditProfileDialog(
+            name = uiState.editName,
+            phone = uiState.editPhone,
+            password = uiState.editPassword,
+            isUpdating = uiState.isUpdating,
+            onNameChange = { viewModel.onEditNameChanged(it) },
+            onPhoneChange = { viewModel.onEditPhoneChanged(it) },
+            onPasswordChange = { viewModel.onEditPasswordChanged(it) },
+            onDismiss = { viewModel.dismissEditDialog() },
+            onSave = { viewModel.updateProfile() }
+        )
     }
 }

@@ -1,7 +1,9 @@
 package com.coditos.splitmeet.features.home.domain.repositories
 
 import com.coditos.splitmeet.features.home.domain.entities.Outing
+import kotlinx.coroutines.flow.Flow
 
 interface HomeRepository {
-    suspend fun getOutings(): List<Outing>
+    fun getOutings(): Flow<List<Outing>>
+    suspend fun syncOutings()
 }
