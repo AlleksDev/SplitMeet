@@ -3,6 +3,7 @@ package com.coditos.splitmeet.features.auth.presentation.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.coditos.splitmeet.core.network.fcm.FcmTokenManager
 import com.coditos.splitmeet.features.auth.data.datasoruces.remote.model.LoginRequest
 import com.coditos.splitmeet.features.auth.data.datasoruces.remote.model.User
 import com.coditos.splitmeet.features.auth.domain.usecases.LoginUseCase
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
-    private val saveTokenUseCase: SaveTokenUseCase
+    private val saveTokenUseCase: SaveTokenUseCase,
+    private val fcmTokenManager: FcmTokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -44,6 +46,10 @@ class AuthViewModel @Inject constructor(
                 onSuccess = { response ->
                     saveTokenUseCase(response.token)
                     Log.d("AuthViewModel", "Token saved successfully")
+
+                    // Register FCM device token with backend right after login
+                    registerFcmToken()
+
                     _uiState.update { currentState ->
                         currentState.copy(
                             isLoading = false,
@@ -107,6 +113,10 @@ class AuthViewModel @Inject constructor(
             onSuccess = { response ->
                 saveTokenUseCase(response.token)
                 Log.d("AuthViewModel", "Token saved after auto-login")
+
+                // Register FCM device token with backend right after auto-login
+                registerFcmToken()
+
                 _uiState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
@@ -124,6 +134,16 @@ class AuthViewModel @Inject constructor(
                 }
             }
         )
+    }
+
+    /**
+     * Registers the FCM device token with the backend so push notifications
+     * can be delivered to this device.
+     */
+    private fun registerFcmToken() {
+        viewModelScope.launch {
+            fcmTokenManager.registerTokenWithBackend()
+        }
     }
 
     fun clearState() {
