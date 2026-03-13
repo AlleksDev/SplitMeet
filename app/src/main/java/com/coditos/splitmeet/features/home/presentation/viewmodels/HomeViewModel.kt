@@ -1,62 +1,67 @@
 package com.coditos.splitmeet.features.home.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.coditos.splitmeet.features.home.domain.usecases.HomeUseCases
+import com.coditos.splitmeet.features.home.domain.usecases.GetHomeItemsUseCase
 import com.coditos.splitmeet.features.home.presentation.screens.HomeUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.launchIn
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeUseCases: HomeUseCases
+    private val getHomeItemsUseCase: GetHomeItemsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
-        getOutings()    // 1. Observa Room como Flow continuo
-        syncOutings()   // 2. Sincroniza con API en paralelo
+        loadHomeItems()
     }
 
-    private fun getOutings() {
-        homeUseCases.getOutings()
-            .onEach { outings ->
-                Log.d("HomeViewModel", "Room emitió: ${outings.size} outings")
-                _uiState.update { it.copy(outings = outings, isLoading = false) }
-            }
-            .launchIn(viewModelScope)
-    }
+    private fun loadHomeItems(isRefresh: Boolean = false) {
+        _uiState.update { 
+            it.copy(
+                isLoading = !isRefresh, 
+                isRefreshing = isRefresh,
+                error = null
+            ) 
+        }
 
-    fun syncOutings() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isSyncing = true, error = null) }
-            try {
-                homeUseCases.syncOutings()
-            } catch (e: Exception) {
-                // Solo muestra error si además no hay datos en caché
-                if (_uiState.value.outings.isEmpty()) {
-                    _uiState.update {
-                        it.copy(error = "Sin conexión y sin datos guardados")
+            val result = getHomeItemsUseCase()
+            Log.d("HomeViewModel", "Result crudo: $result")
+
+            _uiState.update { currentState ->
+                result.fold(
+                    onSuccess = { list ->
+                        currentState.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            outings = list
+                        )
+
+                    },
+                    onFailure = { error ->
+                        currentState.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = error.message
+                        )
                     }
-                }
-                // Si hay datos en caché, falla silenciosamente
-            } finally {
-                _uiState.update { it.copy(isSyncing = false) }
+                )
             }
+
         }
     }
 
     fun onRefresh() {
-        syncOutings()
+        loadHomeItems(isRefresh = true)
     }
 
     fun onTabSelected(index: Int) {
