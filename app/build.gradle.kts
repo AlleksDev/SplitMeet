@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.secrets.gradle)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.hilt.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -105,6 +106,8 @@ dependencies {
     // ML Kit Barcode Scanning
     implementation(libs.mlkit.barcode)
 
+    implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -112,4 +115,5 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "467057410617",
+    "project_id": "splitmeet-76e30",
+    "storage_bucket": "splitmeet-76e30.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:467057410617:android:373350c63a2f3284ee43e8",
+        "android_client_info": {
+          "package_name": "com.coditos.splitmeet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpJHUAXSxVJywtZiuMV-y0zKfiEU85b-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
