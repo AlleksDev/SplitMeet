@@ -1,16 +1,24 @@
 package com.coditos.splitmeet.core.network.interceptor
 
+import com.coditos.splitmeet.core.storage.TokenProvider
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthInterceptor(
-    private val tokenProvider: () -> String
+@Singleton
+class AuthInterceptor @Inject constructor(
+    private val tokenProvider: TokenProvider
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request().newBuilder()
-            .addHeader("Authorization", "Bearer ${tokenProvider()}")
-            .build()
+        val token = tokenProvider.getToken()
 
-        return chain.proceed(request)
+        val requestBuilder = chain.request().newBuilder()
+
+        if (!token.isNullOrEmpty()) {
+            requestBuilder.addHeader("Authorization", "Bearer $token")
+        }
+
+        return chain.proceed(requestBuilder.build())
     }
 }

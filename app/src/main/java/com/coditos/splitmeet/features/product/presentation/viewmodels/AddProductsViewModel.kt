@@ -10,13 +10,16 @@ import com.coditos.splitmeet.features.product.domain.usecases.DeleteOutingItemUs
 import com.coditos.splitmeet.features.product.domain.usecases.GetOutingProductsUseCase
 import com.coditos.splitmeet.features.product.domain.usecases.GetProductsByCategoryUseCase
 import com.coditos.splitmeet.features.product.presentation.screens.AddProductsUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AddProductsViewModel(
+@HiltViewModel
+class AddProductsViewModel @Inject constructor(
     private val getProductsByCategoryUseCase: GetProductsByCategoryUseCase,
     private val getOutingProductsUseCase: GetOutingProductsUseCase,
     private val addOutingItemUseCase: AddOutingItemUseCase,

@@ -9,12 +9,15 @@ import com.coditos.splitmeet.features.auth.domain.usecases.LoginUseCase
 import com.coditos.splitmeet.features.auth.domain.usecases.RegisterUseCase
 import com.coditos.splitmeet.features.auth.domain.usecases.SaveTokenUseCase
 import com.coditos.splitmeet.features.auth.presentation.screens.AuthUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
     private val saveTokenUseCase: SaveTokenUseCase

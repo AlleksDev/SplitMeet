@@ -4,61 +4,63 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.coditos.splitmeet.core.di.AppContainer
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coditos.splitmeet.core.navigation.FeatureNavGraph
 import com.coditos.splitmeet.core.navigation.Home
 import com.coditos.splitmeet.core.navigation.Login
 import com.coditos.splitmeet.core.navigation.NavigationWrapper
+import com.coditos.splitmeet.core.session.domain.model.AppStartDestination
+import com.coditos.splitmeet.core.session.presentation.SessionGateState
+import com.coditos.splitmeet.core.session.presentation.SessionGateViewModel
 import com.coditos.splitmeet.core.ui.theme.SplitMeetTheme
-import com.coditos.splitmeet.features.auth.di.AuthModule
-import com.coditos.splitmeet.features.auth.navigation.AuthNavGraph
-import com.coditos.splitmeet.features.detailOuting.di.DetailOutingModule
-import com.coditos.splitmeet.features.detailOuting.navigation.DetailOutingNavGraph
-import com.coditos.splitmeet.features.home.di.HomeModule
-import com.coditos.splitmeet.features.home.navigation.HomeNavGraph
-import com.coditos.splitmeet.features.outing.di.OutingModule
-import com.coditos.splitmeet.features.outing.navigation.OutingNavGraph
-import com.coditos.splitmeet.features.product.di.ProductModule
-import com.coditos.splitmeet.features.product.navigation.ProductNavGraph
-import kotlinx.coroutines.runBlocking
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private lateinit var appContainer: AppContainer
+    @Inject
+    lateinit var navGraphs: Set<@JvmSuppressWildcards FeatureNavGraph>
+
+    private val sessionGateViewModel: SessionGateViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        appContainer = AppContainer(this)
-        val homeModule = HomeModule(appContainer)
-        val authModule = AuthModule(appContainer)
-        val outingModule = OutingModule(appContainer)
-        val detailOutingModule = DetailOutingModule(appContainer)
-        val productModule = ProductModule(appContainer)
-
-        val navGraphs = listOf(
-            AuthNavGraph(authModule),
-            HomeNavGraph(homeModule),
-            OutingNavGraph(outingModule),
-            DetailOutingNavGraph(detailOutingModule),
-            ProductNavGraph(productModule)
-        )
-
-        val hasToken = runBlocking {
-            appContainer.tokenDataStore.getToken() != null
-        }
-        val startDestination: Any = if (hasToken) Home else Login
-
         enableEdgeToEdge()
         setContent {
             SplitMeetTheme {
-                NavigationWrapper(
-                    navGraphs = navGraphs,
-                    startDestination = startDestination
-                )
+                val uiState by sessionGateViewModel.uiState.collectAsStateWithLifecycle()
+
+                when (val state = uiState) {
+                    SessionGateState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    is SessionGateState.Ready -> {
+                        val startDestination = when (state.destination) {
+                            AppStartDestination.HOME -> Home
+                            AppStartDestination.LOGIN -> Login
+                        }
+
+                        NavigationWrapper(
+                            navGraphs = navGraphs,
+                            startDestination = startDestination
+                        )
+                    }
+                }
             }
         }
     }

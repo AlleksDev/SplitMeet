@@ -1,8 +1,9 @@
 package com.coditos.splitmeet.features.product.domain.usecases
 
 import com.coditos.splitmeet.features.product.domain.repositories.ProductRepository
+import javax.inject.Inject
 
-class DeleteOutingItemUseCase(
+class DeleteOutingItemUseCase @Inject constructor(
     private val repository: ProductRepository
 ) {
     suspend operator fun invoke(outingId: Long, itemId: Long): Result<Unit> {

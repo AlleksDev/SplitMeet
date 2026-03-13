@@ -1,6 +1,6 @@
 package com.coditos.splitmeet.features.detailOuting.navigation
 
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -9,22 +9,18 @@ import com.coditos.splitmeet.core.navigation.AddProducts
 import com.coditos.splitmeet.core.navigation.FeatureNavGraph
 import com.coditos.splitmeet.core.navigation.Home
 import com.coditos.splitmeet.core.navigation.OutingDetail
-import com.coditos.splitmeet.features.detailOuting.di.DetailOutingModule
 import com.coditos.splitmeet.features.detailOuting.presentation.screens.DetailOutingScreen
 import com.coditos.splitmeet.features.detailOuting.presentation.viewmodels.DetailOutingViewModel
+import javax.inject.Inject
 
-class DetailOutingNavGraph(
-    private val detailOutingModule: DetailOutingModule
-) : FeatureNavGraph {
+class DetailOutingNavGraph @Inject constructor() : FeatureNavGraph {
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController
     ) {
         navGraphBuilder.composable<OutingDetail> { backStackEntry ->
             val outingDetail: OutingDetail = backStackEntry.toRoute()
-            val viewModel: DetailOutingViewModel = viewModel(
-                factory = detailOutingModule.provideDetailOutingViewModelFactory()
-            )
+            val viewModel: DetailOutingViewModel = hiltViewModel()
             DetailOutingScreen(
                 outingId = outingDetail.outingId,
                 viewModel = viewModel,

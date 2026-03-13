@@ -23,3 +23,15 @@ data class AddProducts(
     val categoryId: Long,
     val categoryName: String
 )
+
+@Serializable
+object Notifications
+
+@Serializable
+object Profile
+
+@Serializable
+object CreateGroup
+
+@Serializable
+data class GroupDetail(val groupId: Long)

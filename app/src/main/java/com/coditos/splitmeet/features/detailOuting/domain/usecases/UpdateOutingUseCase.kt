@@ -2,8 +2,9 @@ package com.coditos.splitmeet.features.detailOuting.domain.usecases
 
 import com.coditos.splitmeet.features.detailOuting.domain.entities.OutingDetail
 import com.coditos.splitmeet.features.detailOuting.domain.repositories.DetailOutingRepository
+import javax.inject.Inject
 
-class UpdateOutingUseCase(
+class UpdateOutingUseCase @Inject constructor(
     private val repository: DetailOutingRepository
 ) {
     suspend operator fun invoke(

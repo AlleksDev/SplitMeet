@@ -7,7 +7,7 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun NavigationWrapper(
-    navGraphs: List<FeatureNavGraph>,
+    navGraphs: Set<FeatureNavGraph>,
     startDestination: Any = Login
 ) {
     val navController = rememberNavController()

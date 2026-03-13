@@ -4,25 +4,24 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.secrets.gradle)
+    alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
     namespace = "com.coditos.splitmeet"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.coditos.splitmeet"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "BASE_URL", "\"https://frimeet.fun/\"")
-
     }
 
     buildTypes {
@@ -61,12 +60,12 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation("androidx.compose.material:material-icons-extended")
 
-
     // Retrofit & OkHttp
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging)
+    implementation(libs.okhttp.sse)
 
     // Koin DI
     implementation(libs.koin.android)
@@ -83,6 +82,28 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.material3)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    // Biometric
+    implementation(libs.biometric)
+
+    // CameraX
+    implementation(libs.camerax.core)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
+
+    // ML Kit Barcode Scanning
+    implementation(libs.mlkit.barcode)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
