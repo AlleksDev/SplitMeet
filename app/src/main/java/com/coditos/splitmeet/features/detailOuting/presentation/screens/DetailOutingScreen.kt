@@ -32,7 +32,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coditos.splitmeet.features.detailOuting.presentation.components.AddParticipantModal
 import com.coditos.splitmeet.features.detailOuting.presentation.components.ConsumptionSection
 import com.coditos.splitmeet.features.detailOuting.presentation.components.DeleteConfirmationDialog
@@ -58,7 +58,7 @@ fun DetailOutingScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAddProducts: (outingId: Long, categoryId: Long, categoryName: String) -> Unit = { _, _, _ -> }
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Load data when screen is displayed
