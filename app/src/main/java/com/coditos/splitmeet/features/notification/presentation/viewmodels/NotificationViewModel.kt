@@ -2,6 +2,7 @@ package com.coditos.splitmeet.features.notification.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.coditos.splitmeet.core.network.fcm.FcmTokenManager
 import com.coditos.splitmeet.features.notification.domain.entities.Notification
 import com.coditos.splitmeet.features.notification.domain.entities.NotificationType
 import com.coditos.splitmeet.features.notification.domain.usecases.GetNotificationsUseCase
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class NotificationViewModel @Inject constructor(
     private val getNotificationsUseCase: GetNotificationsUseCase,
     private val observeNotifications: ObserveNotificationsUseCase,
-    private val respondInvitation: RespondInvitationUseCase
+    private val respondInvitation: RespondInvitationUseCase,
+    private val fcmTokenManager: FcmTokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NotificationUiState())
@@ -31,11 +33,18 @@ class NotificationViewModel @Inject constructor(
         observeNotifications.startListening()
         loadNotifications()
         listenForRealTimeNotifications()
+        registerFcmToken()
     }
 
     override fun onCleared() {
         super.onCleared()
         observeNotifications.stopListening()
+    }
+
+    private fun registerFcmToken() {
+        viewModelScope.launch {
+            fcmTokenManager.registerTokenWithBackend()
+        }
     }
 
     private fun loadNotifications() {
@@ -110,4 +119,3 @@ class NotificationViewModel @Inject constructor(
         loadNotifications()
     }
 }
-
