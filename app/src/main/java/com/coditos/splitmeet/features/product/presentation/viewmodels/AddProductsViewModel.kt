@@ -4,11 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coditos.splitmeet.features.product.domain.entities.Product
-import com.coditos.splitmeet.features.product.domain.usecases.AddOutingItemUseCase
-import com.coditos.splitmeet.features.product.domain.usecases.CreateProductUseCase
-import com.coditos.splitmeet.features.product.domain.usecases.DeleteOutingItemUseCase
-import com.coditos.splitmeet.features.product.domain.usecases.GetOutingProductsUseCase
-import com.coditos.splitmeet.features.product.domain.usecases.GetProductsByCategoryUseCase
+import com.coditos.splitmeet.features.product.domain.usecases.ProductUseCases
 import com.coditos.splitmeet.features.product.presentation.screens.AddProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -20,11 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddProductsViewModel @Inject constructor(
-    private val getProductsByCategoryUseCase: GetProductsByCategoryUseCase,
-    private val getOutingProductsUseCase: GetOutingProductsUseCase,
-    private val addOutingItemUseCase: AddOutingItemUseCase,
-    private val createProductUseCase: CreateProductUseCase,
-    private val deleteOutingItemUseCase: DeleteOutingItemUseCase
+    private val useCases: ProductUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddProductsUiState())
@@ -55,8 +47,7 @@ class AddProductsViewModel @Inject constructor(
     }
 
     private suspend fun loadOutingProducts() {
-        val result = getOutingProductsUseCase(_uiState.value.outingId)
-        Log.d("AddProductsViewModel", "Outing products result: $result")
+        val result = useCases.getOutingProducts(_uiState.value.outingId)
         
         result.fold(
             onSuccess = { products ->
@@ -71,9 +62,7 @@ class AddProductsViewModel @Inject constructor(
     private suspend fun loadCatalogProducts() {
         _uiState.update { it.copy(isLoadingProducts = true) }
         
-        val result = getProductsByCategoryUseCase(_uiState.value.categoryId)
-        Log.d("AddProductsViewModel", "Catalog products result: $result")
-        
+        val result = useCases.getProductsByCategory(_uiState.value.categoryId)    
         result.fold(
             onSuccess = { products ->
                 _uiState.update { it.copy(catalogProducts = products, isLoadingProducts = false) }
@@ -143,7 +132,7 @@ class AddProductsViewModel @Inject constructor(
         _uiState.update { it.copy(isAddingItem = true, error = null) }
 
         viewModelScope.launch {
-            val result = addOutingItemUseCase(
+            val result = useCases.addOutingItem(
                 outingId = state.outingId,
                 productId = state.selectedProduct?.id,
                 customName = if (state.selectedProduct == null) state.productName else null,
@@ -181,7 +170,7 @@ class AddProductsViewModel @Inject constructor(
         _uiState.update { it.copy(isDeletingItem = itemId) }
 
         viewModelScope.launch {
-            val result = deleteOutingItemUseCase(_uiState.value.outingId, itemId)
+            val result = useCases.deleteOutingItem(_uiState.value.outingId, itemId)
 
             result.fold(
                 onSuccess = {
