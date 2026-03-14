@@ -8,6 +8,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+import com.coditos.splitmeet.core.session.domain.usecases.GetUserIdUseCase
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DetailOutingUseCaseModule {
@@ -84,7 +86,8 @@ object DetailOutingUseCaseModule {
         removeParticipant: RemoveParticipantUseCase,
         updateOuting: UpdateOutingUseCase,
         deleteOuting: DeleteOutingUseCase,
-        getCategories: GetCategoriesUseCase
+        getCategories: GetCategoriesUseCase,
+        getUserId: GetUserIdUseCase
     ): DetailOutingUseCases {
         return DetailOutingUseCases(
             getOutingDetail = getOutingDetail,
@@ -96,7 +99,8 @@ object DetailOutingUseCaseModule {
             removeParticipant = removeParticipant,
             updateOuting = updateOuting,
             deleteOuting = deleteOuting,
-            getCategories = getCategories
+            getCategories = getCategories,
+            getUserId = getUserId
         )
     }
 }

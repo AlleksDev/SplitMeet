@@ -15,7 +15,6 @@ import com.coditos.splitmeet.features.detailOuting.domain.usecases.SearchUsersUs
 import com.coditos.splitmeet.features.detailOuting.domain.entities.Participant
 import com.coditos.splitmeet.core.hardware.domain.FingerPrintManager
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.DetailOutingUseCases
-import com.coditos.splitmeet.features.profile.domain.usecases.GetProfileUseCase
 import com.coditos.splitmeet.features.detailOuting.presentation.screens.DetailOutingUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -30,7 +29,6 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailOutingViewModel @Inject constructor(
     private val useCases: DetailOutingUseCases,
-    private val getProfileUseCase: GetProfileUseCase,
     private val fingerPrintManager: FingerPrintManager
 ) : ViewModel() {
 
@@ -61,11 +59,9 @@ class DetailOutingViewModel @Inject constructor(
             )
 
             // Check if current user is the creator
-            val profileResult = getProfileUseCase()
-            profileResult.onSuccess { profile ->
-                val isCreator = _uiState.value.outingDetail?.creatorId == profile.id
-                _uiState.update { it.copy(isCreator = isCreator) }
-            }
+            val currentUserId = useCases.getUserId()
+            val isCreator = _uiState.value.outingDetail?.creatorId == currentUserId?.toLong()
+            _uiState.update { it.copy(isCreator = isCreator) }
 
             // Load participants
             loadParticipants()
