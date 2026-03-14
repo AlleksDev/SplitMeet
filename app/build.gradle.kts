@@ -97,6 +97,9 @@ dependencies {
     // Biometric
     implementation(libs.biometric)
 
+    // AppCompat (needed for FragmentActivity / BiometricPrompt)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+
     // CameraX
     implementation(libs.camerax.core)
     implementation(libs.camerax.camera2)

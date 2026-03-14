@@ -5,9 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coditos.splitmeet.features.auth.data.datasoruces.remote.model.LoginRequest
 import com.coditos.splitmeet.features.auth.data.datasoruces.remote.model.User
-import com.coditos.splitmeet.features.auth.domain.usecases.LoginUseCase
-import com.coditos.splitmeet.features.auth.domain.usecases.RegisterUseCase
-import com.coditos.splitmeet.features.auth.domain.usecases.SaveTokenUseCase
+import com.coditos.splitmeet.features.auth.domain.usecases.AuthUseCases
 import com.coditos.splitmeet.features.auth.presentation.screens.AuthUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,9 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase,
-    private val registerUseCase: RegisterUseCase,
-    private val saveTokenUseCase: SaveTokenUseCase
+    private val authUseCases: AuthUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -37,12 +33,12 @@ class AuthViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = loginUseCase(request)
+            val result = authUseCases.loginUseCase(request)
             Log.d("AuthViewModel", "Login result: $result")
 
             result.fold(
                 onSuccess = { response ->
-                    saveTokenUseCase(response.token)
+                    authUseCases.saveTokenUseCase(response.token)
                     Log.d("AuthViewModel", "Token saved successfully")
                     _uiState.update { currentState ->
                         currentState.copy(
@@ -75,7 +71,7 @@ class AuthViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = registerUseCase(user)
+            val result = authUseCases.registerUseCase(user)
             Log.d("AuthViewModel", "Register result: $result")
 
             result.fold(
@@ -100,12 +96,12 @@ class AuthViewModel @Inject constructor(
     }
 
     private suspend fun performAutoLogin(email: String, password: String) {
-        val loginResult = loginUseCase(LoginRequest(email = email, password = password))
+        val loginResult = authUseCases.loginUseCase(LoginRequest(email = email, password = password))
         Log.d("AuthViewModel", "Auto-login result: $loginResult")
 
         loginResult.fold(
             onSuccess = { response ->
-                saveTokenUseCase(response.token)
+                authUseCases.saveTokenUseCase(response.token)
                 Log.d("AuthViewModel", "Token saved after auto-login")
                 _uiState.update { currentState ->
                     currentState.copy(

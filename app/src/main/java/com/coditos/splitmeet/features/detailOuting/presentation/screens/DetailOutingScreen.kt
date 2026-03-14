@@ -101,24 +101,42 @@ fun DetailOutingScreen(
     LaunchedEffect(uiState.requireBiometricAuth) {
         val participant = uiState.requireBiometricAuth
         if (participant != null) {
-            val activity = context as? androidx.fragment.app.FragmentActivity
+            android.util.Log.d("BiometricFlow", "requireBiometricAuth triggered for participant: ${participant.username}")
+            android.util.Log.d("BiometricFlow", "Context type: ${context.javaClass.name}")
+
+            var ctx: android.content.Context = context
+            var activity: androidx.fragment.app.FragmentActivity? = null
+            while (ctx is android.content.ContextWrapper) {
+                android.util.Log.d("BiometricFlow", "Unwrapping: ${ctx.javaClass.name}")
+                if (ctx is androidx.fragment.app.FragmentActivity) {
+                    activity = ctx
+                    android.util.Log.d("BiometricFlow", "FragmentActivity FOUND: ${ctx.javaClass.name}")
+                    break
+                }
+                ctx = ctx.baseContext
+            }
+
             if (activity != null) {
+                android.util.Log.d("BiometricFlow", "Launching BiometricPrompt with activity: ${activity.javaClass.name}")
                 fingerPrintManager.authenticate(
                     activity = activity,
                     onSuccess = {
+                        android.util.Log.d("BiometricFlow", "Biometric auth SUCCESS")
                         viewModel.onBiometricAuthDismissed()
                         viewModel.executeConfirmPayment(participant)
                     },
-                    onError = { _, errorMessage ->
+                    onError = { errorCode, errorMessage ->
+                        android.util.Log.e("BiometricFlow", "Biometric auth ERROR: code=$errorCode, msg=$errorMessage")
                         viewModel.onBiometricAuthError(errorMessage)
                     },
                     onFailed = {
+                        android.util.Log.w("BiometricFlow", "Biometric auth FAILED (bad fingerprint)")
                         viewModel.onBiometricAuthFailed()
                     }
                 )
             } else {
-                viewModel.onBiometricAuthDismissed()
-                viewModel.executeConfirmPayment(participant)
+                android.util.Log.e("BiometricFlow", "FragmentActivity NOT FOUND after full unwrap. Last context: ${ctx.javaClass.name}")
+                viewModel.onBiometricAuthError("No se pudo obtener el contexto de la actividad.")
             }
         }
     }

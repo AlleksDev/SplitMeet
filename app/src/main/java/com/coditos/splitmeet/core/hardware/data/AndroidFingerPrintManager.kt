@@ -1,6 +1,7 @@
 package com.coditos.splitmeet.core.hardware.data
 
 import android.content.Context
+import android.util.Log
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -16,11 +17,15 @@ class AndroidFingerPrintManager @Inject constructor(
     private val biometricManager: BiometricManager = BiometricManager.from(context)
 
     override fun hasFingerPrint(): Boolean {
-        return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
+        val result = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+        Log.d("BiometricFlow", "hasFingerPrint check: result=$result, hasHardware=${result != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE}")
+        return result != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
     }
 
     override fun hasEnrolledFingerPrints(): Boolean {
-        return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS
+        val result = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+        Log.d("BiometricFlow", "hasEnrolledFingerPrints check: result=$result, isSuccess=${result == BiometricManager.BIOMETRIC_SUCCESS}")
+        return result == BiometricManager.BIOMETRIC_SUCCESS
     }
 
     override fun authenticate(
@@ -29,18 +34,22 @@ class AndroidFingerPrintManager @Inject constructor(
         onError: (errorCode: Int, errorMessage: String) -> Unit,
         onFailed: () -> Unit
     ) {
+        Log.d("BiometricFlow", "authenticate() called with activity: ${activity.javaClass.name}")
         val executor = ContextCompat.getMainExecutor(context)
 
         val callback = object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                Log.d("BiometricFlow", "onAuthenticationSucceeded")
                 onSuccess()
             }
 
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                Log.e("BiometricFlow", "onAuthenticationError: code=$errorCode, msg=$errString")
                 onError(errorCode, errString.toString())
             }
 
             override fun onAuthenticationFailed() {
+                Log.w("BiometricFlow", "onAuthenticationFailed")
                 onFailed()
             }
         }
@@ -54,6 +63,7 @@ class AndroidFingerPrintManager @Inject constructor(
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
 
+        Log.d("BiometricFlow", "Calling biometricPrompt.authenticate()")
         biometricPrompt.authenticate(promptInfo)
     }
 }

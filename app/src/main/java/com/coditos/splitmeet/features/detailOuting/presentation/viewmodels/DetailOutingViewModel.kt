@@ -12,9 +12,9 @@ import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetOutingItem
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.GetParticipantsUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.RemoveParticipantUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.SearchUsersUseCase
-import com.coditos.splitmeet.features.detailOuting.domain.usecases.UpdateOutingUseCase
 import com.coditos.splitmeet.features.detailOuting.domain.entities.Participant
 import com.coditos.splitmeet.core.hardware.domain.FingerPrintManager
+import com.coditos.splitmeet.features.detailOuting.domain.usecases.DetailOutingUseCases
 import com.coditos.splitmeet.features.profile.domain.usecases.GetProfileUseCase
 import com.coditos.splitmeet.features.detailOuting.presentation.screens.DetailOutingUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,16 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailOutingViewModel @Inject constructor(
-    private val getOutingDetailUseCase: GetOutingDetailUseCase,
-    private val getParticipantsUseCase: GetParticipantsUseCase,
-    private val getOutingItemsUseCase: GetOutingItemsUseCase,
-    private val searchUsersUseCase: SearchUsersUseCase,
-    private val addParticipantUseCase: AddParticipantUseCase,
-    private val confirmPaymentUseCase: ConfirmPaymentUseCase,
-    private val removeParticipantUseCase: RemoveParticipantUseCase,
-    private val updateOutingUseCase: UpdateOutingUseCase,
-    private val deleteOutingUseCase: DeleteOutingUseCase,
-    private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val useCases: DetailOutingUseCases,
     private val getProfileUseCase: GetProfileUseCase,
     private val fingerPrintManager: FingerPrintManager
 ) : ViewModel() {
@@ -57,7 +48,7 @@ class DetailOutingViewModel @Inject constructor(
 
         viewModelScope.launch {
             // Load outing detail
-            val detailResult = getOutingDetailUseCase(outingId)
+            val detailResult = useCases.getOutingDetail(outingId)
             Log.d("DetailOutingViewModel", "Detail result: $detailResult")
 
             detailResult.fold(
@@ -89,7 +80,7 @@ class DetailOutingViewModel @Inject constructor(
     private suspend fun loadParticipants() {
         _uiState.update { it.copy(isParticipantsLoading = true) }
 
-        val participantsResult = getParticipantsUseCase(outingId)
+        val participantsResult = useCases.getParticipants(outingId)
         Log.d("DetailOutingViewModel", "Participants result: $participantsResult")
 
         participantsResult.fold(
@@ -106,7 +97,7 @@ class DetailOutingViewModel @Inject constructor(
     private suspend fun loadItems() {
         _uiState.update { it.copy(isItemsLoading = true) }
 
-        val itemsResult = getOutingItemsUseCase(outingId)
+        val itemsResult = useCases.getOutingItems(outingId)
         Log.d("DetailOutingViewModel", "Items result: $itemsResult")
 
         itemsResult.fold(
@@ -169,7 +160,7 @@ class DetailOutingViewModel @Inject constructor(
 
         _uiState.update { it.copy(isSearching = true) }
 
-        val result = searchUsersUseCase(query)
+        val result = useCases.searchUsers(query)
         Log.d("DetailOutingViewModel", "Search users result: $result")
 
         result.fold(
@@ -191,7 +182,7 @@ class DetailOutingViewModel @Inject constructor(
         _uiState.update { it.copy(addingParticipantId = userId, addParticipantError = null) }
 
         viewModelScope.launch {
-            val result = addParticipantUseCase(outingId, userId)
+            val result = useCases.addParticipant(outingId, userId)
             Log.d("DetailOutingViewModel", "Add participant result: $result")
 
             result.fold(
@@ -220,24 +211,34 @@ class DetailOutingViewModel @Inject constructor(
     fun confirmPayment(participant: Participant) {
         if (!participant.isPaymentPending) return
 
-        if (fingerPrintManager.hasEnrolledFingerPrints()) {
-            _uiState.update { it.copy(requireBiometricAuth = participant) }
-        } else {
-            executeConfirmPayment(participant)
+        if (!fingerPrintManager.hasFingerPrint()) {
+            _uiState.update {
+                it.copy(error = "Tu dispositivo no cuenta con hardware biométrico.")
+            }
+            return
         }
+
+        if (!fingerPrintManager.hasEnrolledFingerPrints()) {
+            _uiState.update {
+                it.copy(error = "No tienes huellas registradas. Configura la biometría en los ajustes de tu dispositivo.")
+            }
+            return
+        }
+
+        _uiState.update { it.copy(requireBiometricAuth = participant) }
     }
 
     fun onBiometricAuthDismissed() {
         _uiState.update { it.copy(requireBiometricAuth = null) }
-    }
-
-    fun onBiometricAuthError(errorMessage: String) {
-        _uiState.update {
-            it.copy(
-                requireBiometricAuth = null,
-                error = "Error biométrico: $errorMessage"
-            )
         }
+
+        fun onBiometricAuthError(errorMessage: String) {
+            _uiState.update {
+                it.copy(
+                    requireBiometricAuth = null,
+                    error = "Error biométrico: $errorMessage"
+                )
+            }
     }
 
     fun onBiometricAuthFailed() {
@@ -254,7 +255,7 @@ class DetailOutingViewModel @Inject constructor(
         _uiState.update { it.copy(confirmingPaymentUserId = participant.userId, error = null) }
 
         viewModelScope.launch {
-            val result = confirmPaymentUseCase(paymentId)
+            val result = useCases.confirmPayment(paymentId)
 
             result.fold(
                 onSuccess = {
@@ -303,7 +304,7 @@ class DetailOutingViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = removeParticipantUseCase(outingId, participant.userId)
+            val result = useCases.removeParticipant(outingId, participant.userId)
 
             result.fold(
                 onSuccess = {
@@ -338,7 +339,7 @@ class DetailOutingViewModel @Inject constructor(
         
         viewModelScope.launch {
             // Load categories first
-            val categoriesResult = getCategoriesUseCase()
+            val categoriesResult = useCases.getCategories()
             val categories = categoriesResult.getOrDefault(emptyList())
             
             _uiState.update {
@@ -386,7 +387,7 @@ class DetailOutingViewModel @Inject constructor(
         _uiState.update { it.copy(isUpdating = true) }
 
         viewModelScope.launch {
-            val result = updateOutingUseCase(
+            val result = useCases.updateOuting(
                 outingId = outingId,
                 name = state.editName,
                 description = state.editDescription.ifBlank { null },
@@ -435,7 +436,7 @@ class DetailOutingViewModel @Inject constructor(
         _uiState.update { it.copy(isDeleting = true) }
 
         viewModelScope.launch {
-            val result = deleteOutingUseCase(outingId)
+            val result = useCases.deleteOuting(outingId)
 
             result.fold(
                 onSuccess = {
