@@ -1,5 +1,7 @@
 package com.coditos.splitmeet.features.auth.di
 
+import com.coditos.splitmeet.core.storage.TokenDataStore
+import com.coditos.splitmeet.features.auth.domain.repositories.AuthRepository
 import com.coditos.splitmeet.features.auth.domain.usecases.AuthUseCases
 import com.coditos.splitmeet.features.auth.domain.usecases.LoginUseCase
 import com.coditos.splitmeet.features.auth.domain.usecases.RegisterUseCase
@@ -7,19 +9,42 @@ import com.coditos.splitmeet.features.auth.domain.usecases.SaveTokenUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object AuthUseCaseModule {
+
     @Provides
+    @Singleton
+    fun provideLoginUseCase(repository: AuthRepository): LoginUseCase {
+        return LoginUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegisterUseCase(repository: AuthRepository): RegisterUseCase {
+        return RegisterUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveTokenUseCase(tokenDataStore: TokenDataStore): SaveTokenUseCase {
+        return SaveTokenUseCase(tokenDataStore)
+    }
+
+    @Provides
+    @Singleton
     fun provideAuthUseCases(
         loginUseCase: LoginUseCase,
         registerUseCase: RegisterUseCase,
         saveTokenUseCase: SaveTokenUseCase
-    ): AuthUseCases = AuthUseCases(
-        loginUseCase = loginUseCase,
-        registerUseCase = registerUseCase,
-        saveTokenUseCase = saveTokenUseCase
-    )
+    ): AuthUseCases {
+        return AuthUseCases(
+            login = loginUseCase,
+            register = registerUseCase,
+            saveToken = saveTokenUseCase
+        )
+    }
 }
