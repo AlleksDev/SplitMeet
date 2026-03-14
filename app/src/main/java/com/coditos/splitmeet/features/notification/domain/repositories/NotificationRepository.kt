@@ -16,5 +16,7 @@ interface NotificationRepository {
     suspend fun respondGroupInvitation(groupId: Long, accept: Boolean): Result<String>
 
     suspend fun respondOutingInvitation(outingId: Long, accept: Boolean): Result<String>
+
+    suspend fun registerDeviceToken(token: String): Result<String>
 }
 
