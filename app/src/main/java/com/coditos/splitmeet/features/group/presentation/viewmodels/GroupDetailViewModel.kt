@@ -4,12 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.SearchUsersUseCase
-import com.coditos.splitmeet.features.group.domain.usecases.DeleteGroupUseCase
-import com.coditos.splitmeet.features.group.domain.usecases.GetGroupDetailUseCase
-import com.coditos.splitmeet.features.group.domain.usecases.GetGroupMembersUseCase
-import com.coditos.splitmeet.features.group.domain.usecases.InviteMemberUseCase
-import com.coditos.splitmeet.features.group.domain.usecases.RemoveMemberUseCase
-import com.coditos.splitmeet.features.group.domain.usecases.UpdateGroupUseCase
+import com.coditos.splitmeet.features.group.domain.usecases.GroupUseCases
 import com.coditos.splitmeet.features.group.presentation.screens.GroupDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -23,12 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GroupDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getGroupDetailUseCase: GetGroupDetailUseCase,
-    private val getGroupMembersUseCase: GetGroupMembersUseCase,
-    private val inviteMemberUseCase: InviteMemberUseCase,
-    private val removeMemberUseCase: RemoveMemberUseCase,
-    private val deleteGroupUseCase: DeleteGroupUseCase,
-    private val updateGroupUseCase: UpdateGroupUseCase,
+    private val groupUseCases: GroupUseCases,
     private val searchUsersUseCase: SearchUsersUseCase
 ) : ViewModel() {
 
@@ -46,7 +36,7 @@ class GroupDetailViewModel @Inject constructor(
     fun loadGroupDetail() {
         _uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            getGroupDetailUseCase(groupId).fold(
+            groupUseCases.getGroupDetail(groupId).fold(
                 onSuccess = { group ->
                     _uiState.update { it.copy(group = group) }
                 },
@@ -55,7 +45,7 @@ class GroupDetailViewModel @Inject constructor(
                     return@launch
                 }
             )
-            getGroupMembersUseCase(groupId).fold(
+            groupUseCases.getGroupMembers(groupId).fold(
                 onSuccess = { members ->
                     _uiState.update { it.copy(isLoading = false, members = members) }
                 },
@@ -122,7 +112,7 @@ class GroupDetailViewModel @Inject constructor(
     fun inviteMember(username: String) {
         _uiState.update { it.copy(isInviting = true) }
         viewModelScope.launch {
-            inviteMemberUseCase(groupId, username).fold(
+            groupUseCases.inviteMember(groupId, username).fold(
                 onSuccess = {
                     _uiState.update {
                         it.copy(
@@ -144,7 +134,7 @@ class GroupDetailViewModel @Inject constructor(
     fun inviteMemberById(userId: Long, username: String) {
         _uiState.update { it.copy(invitingUserId = userId, searchError = null) }
         viewModelScope.launch {
-            inviteMemberUseCase(groupId, username).fold(
+            groupUseCases.inviteMember(groupId, username).fold(
                 onSuccess = {
                     _uiState.update {
                         it.copy(
@@ -165,7 +155,7 @@ class GroupDetailViewModel @Inject constructor(
 
     fun removeMember(userId: Long) {
         viewModelScope.launch {
-            removeMemberUseCase(groupId, userId).fold(
+            groupUseCases.removeMember(groupId, userId).fold(
                 onSuccess = { loadGroupDetail() },
                 onFailure = { e ->
                     _uiState.update { it.copy(error = e.message) }
@@ -187,7 +177,7 @@ class GroupDetailViewModel @Inject constructor(
     fun deleteGroup(onDeleted: () -> Unit) {
         _uiState.update { it.copy(isDeleting = true) }
         viewModelScope.launch {
-            deleteGroupUseCase(groupId).fold(
+            groupUseCases.deleteGroup(groupId).fold(
                 onSuccess = {
                     _uiState.update { it.copy(isDeleting = false, showDeleteDialog = false) }
                     onDeleted()
@@ -229,7 +219,7 @@ class GroupDetailViewModel @Inject constructor(
         if (name.isBlank()) return
         _uiState.update { it.copy(isUpdating = true) }
         viewModelScope.launch {
-            updateGroupUseCase(groupId, name, _uiState.value.editDescription.trim()).fold(
+            groupUseCases.updateGroup(groupId, name, _uiState.value.editDescription.trim()).fold(
                 onSuccess = { updatedGroup ->
                     _uiState.update {
                         it.copy(
