@@ -6,8 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.coditos.splitmeet.features.outing.data.datasources.remote.model.CreateOutingRequest
 import com.coditos.splitmeet.features.outing.domain.entities.Category
 import com.coditos.splitmeet.features.outing.domain.entities.SplitType
-import com.coditos.splitmeet.features.outing.domain.usecases.CreateOutingUseCase
-import com.coditos.splitmeet.features.outing.domain.usecases.GetCategoriesUseCase
+import com.coditos.splitmeet.features.outing.domain.usecases.OutingUseCases
 import com.coditos.splitmeet.features.outing.presentation.screens.CreateOutingUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,8 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OutingViewModel @Inject constructor(
-    private val createOutingUseCase: CreateOutingUseCase,
-    private val getCategoriesUseCase: GetCategoriesUseCase
+    private val useCases: OutingUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateOutingUiState())
@@ -33,7 +31,7 @@ class OutingViewModel @Inject constructor(
         _uiState.update { it.copy(isCategoriesLoading = true) }
 
         viewModelScope.launch {
-            val result = getCategoriesUseCase()
+            val result = useCases.getCategories()
             Log.d("OutingViewModel", "Categories result: $result")
 
             _uiState.update { currentState ->
@@ -140,7 +138,7 @@ class OutingViewModel @Inject constructor(
 
             Log.d("OutingViewModel", "Creating outing with request: $request")
 
-            val result = createOutingUseCase(request)
+            val result = useCases.createOuting(request)
 
             _uiState.update { state ->
                 result.fold(
