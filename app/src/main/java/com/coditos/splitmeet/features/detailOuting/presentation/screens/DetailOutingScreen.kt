@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,7 +47,11 @@ import com.coditos.splitmeet.features.detailOuting.presentation.components.Delet
 import com.coditos.splitmeet.features.detailOuting.presentation.components.EditOutingModal
 import com.coditos.splitmeet.features.detailOuting.presentation.components.OutingInfoCard
 import com.coditos.splitmeet.features.detailOuting.presentation.components.ParticipantsSection
-import com.coditos.splitmeet.features.detailOuting.presentation.viewmodels.DetailOutingViewModel
+import com.coditos.splitmeet.features.detailOuting.presentation.components.RemoveParticipantConfirmationDialog
+import com.coditos.splitmeet.features.detailOuting.presentation.viewmodels.DetailOutingViewModel// Agrega este import
+import androidx.compose.ui.platform.LocalContext
+import com.coditos.splitmeet.core.utils.findFragmentActivity
+import androidx.fragment.app.FragmentActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,6 +82,23 @@ fun DetailOutingScreen(
             snackbarHostState.showSnackbar(uiState.successMessage!!)
             viewModel.hideSuccessMessage()
         }
+    }
+
+    // ✅ Obtiener la actividad para autenticación biométrica
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.biometricAuthTrigger) {
+        val participant = uiState.requireBiometricAuth ?: return@LaunchedEffect
+
+        val currentActivity = context.findFragmentActivity()
+        if (currentActivity == null) {
+            android.util.Log.e("BiometricFlow", "Activity null. Context type: ${context.javaClass.name}")
+            viewModel.onBiometricAuthError("No se pudo obtener la actividad para la autenticación biométrica.")
+            return@LaunchedEffect
+        }
+
+        android.util.Log.d("BiometricFlow", "Activity found: ${currentActivity.javaClass.name}")
+        viewModel.authenticatePendingPayment(currentActivity, participant)
     }
 
     Surface(
@@ -222,9 +242,15 @@ fun DetailOutingScreen(
                                 participants = uiState.participants,
                                 paidCount = uiState.paidParticipantsCount,
                                 totalCount = uiState.participants.size,
+                                canRemoveParticipants = uiState.outingDetail?.isEditable == true,
+                                isCreator = uiState.isCreator,
+                                selectedParticipantId = uiState.selectedParticipantId,
+                                confirmingPaymentUserId = uiState.confirmingPaymentUserId,
+                                removingParticipantUserId = uiState.removingParticipantUserId,
+                                onParticipantClick = { viewModel.selectParticipant(it) },
                                 onAddParticipantClick = { viewModel.showAddParticipantModal() },
-                                onMarkAsPaid = { /* TODO: Mark as paid */ },
-                                onRemoveParticipant = { /* TODO: Remove participant */ }
+                                onMarkAsPaid = { participant -> viewModel.confirmPayment(participant) },
+                                onRemoveParticipant = { participant -> viewModel.requestRemoveParticipant(participant) }
                             )
 
                             // Bottom spacing
@@ -274,6 +300,14 @@ fun DetailOutingScreen(
                     isDeleting = uiState.isDeleting,
                     onConfirm = { viewModel.deleteOuting() },
                     onDismiss = { viewModel.hideDeleteConfirmation() }
+                )
+
+                RemoveParticipantConfirmationDialog(
+                    isVisible = uiState.showRemoveParticipantDialog,
+                    participantName = uiState.participantToRemove?.name ?: "este participante",
+                    isRemoving = uiState.removingParticipantUserId != null,
+                    onConfirm = { viewModel.removeSelectedParticipant() },
+                    onDismiss = { viewModel.dismissRemoveParticipantDialog() }
                 )
             }
         }

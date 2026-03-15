@@ -6,9 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.coditos.splitmeet.core.network.fcm.FcmTokenManager
 import com.coditos.splitmeet.features.auth.data.datasoruces.remote.model.LoginRequest
 import com.coditos.splitmeet.features.auth.data.datasoruces.remote.model.User
-import com.coditos.splitmeet.features.auth.domain.usecases.LoginUseCase
-import com.coditos.splitmeet.features.auth.domain.usecases.RegisterUseCase
-import com.coditos.splitmeet.features.auth.domain.usecases.SaveTokenUseCase
+import com.coditos.splitmeet.features.auth.domain.usecases.AuthUseCases
 import com.coditos.splitmeet.features.auth.presentation.screens.AuthUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase,
-    private val registerUseCase: RegisterUseCase,
-    private val saveTokenUseCase: SaveTokenUseCase,
+    private val useCases: AuthUseCases,
     private val fcmTokenManager: FcmTokenManager
 ) : ViewModel() {
 
@@ -39,12 +35,12 @@ class AuthViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = loginUseCase(request)
+            val result = useCases.login(request)
             Log.d("AuthViewModel", "Login result: $result")
 
             result.fold(
                 onSuccess = { response ->
-                    saveTokenUseCase(response.token)
+                    useCases.saveToken(response.token)
                     Log.d("AuthViewModel", "Token saved successfully")
 
                     // Register FCM device token with backend right after login
@@ -81,7 +77,7 @@ class AuthViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = registerUseCase(user)
+            val result = useCases.register(user)
             Log.d("AuthViewModel", "Register result: $result")
 
             result.fold(
@@ -106,12 +102,12 @@ class AuthViewModel @Inject constructor(
     }
 
     private suspend fun performAutoLogin(email: String, password: String) {
-        val loginResult = loginUseCase(LoginRequest(email = email, password = password))
+        val loginResult = useCases.login(LoginRequest(email = email, password = password))
         Log.d("AuthViewModel", "Auto-login result: $loginResult")
 
         loginResult.fold(
             onSuccess = { response ->
-                saveTokenUseCase(response.token)
+                useCases.saveToken(response.token)
                 Log.d("AuthViewModel", "Token saved after auto-login")
 
                 // Register FCM device token with backend right after auto-login

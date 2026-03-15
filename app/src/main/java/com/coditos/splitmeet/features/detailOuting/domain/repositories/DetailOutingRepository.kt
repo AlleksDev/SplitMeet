@@ -12,6 +12,8 @@ interface DetailOutingRepository {
     suspend fun getOutingItems(outingId: Long): List<OutingItem>
     suspend fun searchUsers(username: String): List<SearchUser>
     suspend fun addParticipant(outingId: Long, userId: Long): Boolean
+    suspend fun removeParticipant(outingId: Long, userId: Long)
+    suspend fun confirmPayment(paymentId: Long)
     suspend fun updateOuting(
         outingId: Long,
         name: String,

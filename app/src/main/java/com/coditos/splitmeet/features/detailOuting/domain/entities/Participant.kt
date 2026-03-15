@@ -7,6 +7,8 @@ data class Participant(
     val username: String,
     val name: String,
     val status: String,
+    val paymentId: Long?,
+    val paymentStatus: String?,
     val amountOwed: Double,
     val customAmount: Double?
 ) {
@@ -17,7 +19,14 @@ data class Participant(
         get() = status.equals("pending", ignoreCase = true)
     
     val isPaid: Boolean
-        get() = status.equals("paid", ignoreCase = true)
+        get() = paymentStatus.equals("paid", ignoreCase = true) || status.equals("paid", ignoreCase = true)
+
+    val isPaymentPending: Boolean
+        get() = when {
+            paymentStatus.equals("pending", ignoreCase = true) -> true
+            paymentStatus == null && isConfirmed -> true
+            else -> false
+        }
     
     val isDeclined: Boolean
         get() = status.equals("declined", ignoreCase = true)

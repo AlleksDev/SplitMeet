@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.SplitMeet" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Theme compatible with AppCompatActivity and Jetpack Compose -->
+    <style name="Theme.SplitMeet" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>

@@ -19,6 +19,8 @@ data class ParticipantDto(
     val amountOwed: Double? = null,
     @SerializedName(value = "CustomAmount", alternate = ["custom_amount", "customAmount"])
     val customAmount: Double? = null,
+    @SerializedName(value = "PaymentID", alternate = ["payment_id", "paymentId"])
+    val paymentId: Long? = null,
     @SerializedName(value = "PaymentStatus", alternate = ["payment_status", "paymentStatus"])
     val paymentStatus: String? = null,
     @SerializedName(value = "JoinedAt", alternate = ["joined_at", "joinedAt"])

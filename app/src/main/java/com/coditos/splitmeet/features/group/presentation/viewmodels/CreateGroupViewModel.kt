@@ -2,7 +2,7 @@ package com.coditos.splitmeet.features.group.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.coditos.splitmeet.features.group.domain.usecases.CreateGroupUseCase
+import com.coditos.splitmeet.features.group.domain.usecases.GroupUseCases
 import com.coditos.splitmeet.features.group.presentation.screens.CreateGroupUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateGroupViewModel @Inject constructor(
-    private val createGroupUseCase: CreateGroupUseCase
+    private val groupUseCases: GroupUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateGroupUiState())
@@ -38,7 +38,7 @@ class CreateGroupViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true, error = null) }
 
         viewModelScope.launch {
-            createGroupUseCase(currentState.name, currentState.description).fold(
+            groupUseCases.createGroup(currentState.name, currentState.description).fold(
                 onSuccess = { group ->
                     _uiState.update {
                         it.copy(

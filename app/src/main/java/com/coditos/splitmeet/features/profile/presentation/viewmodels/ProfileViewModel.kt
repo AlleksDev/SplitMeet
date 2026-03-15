@@ -2,9 +2,7 @@ package com.coditos.splitmeet.features.profile.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.coditos.splitmeet.features.profile.domain.usecases.GetProfileUseCase
-import com.coditos.splitmeet.features.profile.domain.usecases.LogoutUseCase
-import com.coditos.splitmeet.features.profile.domain.usecases.UpdateProfileUseCase
+import com.coditos.splitmeet.features.profile.domain.usecases.ProfileUseCases
 import com.coditos.splitmeet.features.profile.presentation.screens.ProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,9 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val getProfileUseCase: GetProfileUseCase,
-    private val logoutUseCase: LogoutUseCase,
-    private val updateProfileUseCase: UpdateProfileUseCase
+    private val useCases: ProfileUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -30,7 +26,7 @@ class ProfileViewModel @Inject constructor(
     private fun loadProfile() {
         _uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            getProfileUseCase().fold(
+            useCases.getProfile().fold(
                 onSuccess = { profile ->
                     _uiState.update { it.copy(isLoading = false, profile = profile) }
                 },
@@ -43,7 +39,7 @@ class ProfileViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            logoutUseCase()
+            useCases.logout()
             _uiState.update { it.copy(loggedOut = true) }
         }
     }
@@ -94,7 +90,7 @@ class ProfileViewModel @Inject constructor(
 
         _uiState.update { it.copy(isUpdating = true, error = null) }
         viewModelScope.launch {
-            updateProfileUseCase(name, phone, password).fold(
+            useCases.updateProfile(name, phone, password).fold(
                 onSuccess = { updatedProfile ->
                     _uiState.update {
                         it.copy(

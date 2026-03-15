@@ -11,6 +11,8 @@ fun ParticipantDto.toDomain(): Participant {
         username = this.username ?: "",
         name = this.name ?: this.username ?: "",
         status = this.status ?: "pending",
+        paymentId = this.paymentId,
+        paymentStatus = this.paymentStatus,
         amountOwed = this.amountOwed ?: 0.0,
         customAmount = this.customAmount
     )

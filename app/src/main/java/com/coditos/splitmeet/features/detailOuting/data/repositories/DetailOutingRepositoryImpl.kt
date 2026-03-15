@@ -44,6 +44,14 @@ class DetailOutingRepositoryImpl @Inject constructor(
         return response.id != null
     }
 
+    override suspend fun removeParticipant(outingId: Long, userId: Long) {
+        api.removeParticipant(outingId, userId)
+    }
+
+    override suspend fun confirmPayment(paymentId: Long) {
+        api.confirmPayment(paymentId)
+    }
+
     override suspend fun updateOuting(
         outingId: Long,
         name: String,

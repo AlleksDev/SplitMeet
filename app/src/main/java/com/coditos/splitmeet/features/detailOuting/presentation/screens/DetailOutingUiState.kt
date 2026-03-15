@@ -20,7 +20,18 @@ data class DetailOutingUiState(
     // Participants
     val participants: List<Participant> = emptyList(),
     val isParticipantsLoading: Boolean = false,
+    val confirmingPaymentUserId: Long? = null,
+    val removingParticipantUserId: Long? = null,
+    val showRemoveParticipantDialog: Boolean = false,
+    val participantToRemove: Participant? = null,
+    val selectedParticipantId: Long? = null,
+    val isCreator: Boolean = false,
     
+    // Biometric Auth Support
+    val requireBiometricAuth: Participant? = null,
+    val biometricAuthTrigger: Long = 0L, // ✅ Nuevo campo
+
+
     // Add participant modal
     val showAddParticipantModal: Boolean = false,
     val searchQuery: String = "",

@@ -1,7 +1,13 @@
 package com.coditos.splitmeet.features.detailOuting.presentation.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +48,13 @@ fun ParticipantsSection(
     participants: List<Participant>,
     paidCount: Int,
     totalCount: Int,
+    canRemoveParticipants: Boolean,
+    isCreator: Boolean,
+    selectedParticipantId: Long?,
+    confirmingPaymentUserId: Long?,
+    removingParticipantUserId: Long?,
     modifier: Modifier = Modifier,
+    onParticipantClick: (Long) -> Unit = {},
     onAddParticipantClick: () -> Unit = {},
     onMarkAsPaid: (Participant) -> Unit = {},
     onRemoveParticipant: (Participant) -> Unit = {}
@@ -125,8 +137,16 @@ fun ParticipantsSection(
             } else {
                 // Participants list
                 participants.forEach { participant ->
-                    ParticipantCard(
+                    val isSelected = selectedParticipantId == participant.userId
+
+                    ParticipantItem(
                         participant = participant,
+                        isSelected = isSelected,
+                        isCreator = isCreator,
+                        canRemove = canRemoveParticipants,
+                        isConfirmingPayment = confirmingPaymentUserId == participant.userId,
+                        isRemoving = removingParticipantUserId == participant.userId,
+                        onClick = { onParticipantClick(participant.userId) },
                         onMarkAsPaid = { onMarkAsPaid(participant) },
                         onRemove = { onRemoveParticipant(participant) }
                     )
@@ -161,14 +181,20 @@ fun ParticipantsSection(
 }
 
 @Composable
-fun ParticipantCard(
+fun ParticipantItem(
     participant: Participant,
+    isSelected: Boolean,
+    isCreator: Boolean,
+    canRemove: Boolean,
+    isConfirmingPayment: Boolean,
+    isRemoving: Boolean,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
     onMarkAsPaid: () -> Unit = {},
     onRemove: () -> Unit = {}
 ) {
     val currencyFormat = NumberFormat.getCurrencyInstance(Locale("es", "MX"))
-    
+
     val avatarColors = listOf(
         Color(0xFF5C6BC0),
         Color(0xFF26A69A),
@@ -179,41 +205,62 @@ fun ParticipantCard(
     )
     val avatarColor = avatarColors[participant.id.hashCode().mod(avatarColors.size).let { if (it < 0) -it else it }]
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
+    val selectedBorderColor = Color(0xFFE67E22)
+
+    Column(
+        modifier = modifier.fillMaxWidth()
     ) {
-        // Avatar
-        Box(
+        // Participant card row
+        Row(
             modifier = Modifier
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(avatarColor),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .then(
+                    if (isSelected) {
+                        Modifier.border(
+                            width = 2.dp,
+                            color = selectedBorderColor,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .then(
+                    if (isCreator) {
+                        Modifier.clickable(onClick = onClick)
+                    } else {
+                        Modifier
+                    }
+                )
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = participant.displayInitial.toString(),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = Color.White
-            )
-        }
+            // Avatar
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(avatarColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = participant.displayInitial.toString(),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.White
+                )
+            }
 
-        Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-        // Name and status
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            // Name and username
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = participant.name,
@@ -221,60 +268,75 @@ fun ParticipantCard(
                         fontWeight = FontWeight.Medium
                     )
                 )
-            }
-
-            // Username
-            Text(
-                text = "@${participant.username}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        // Amount and status
-        Column(
-            horizontalAlignment = Alignment.End
-        ) {
-            Text(
-                text = currencyFormat.format(participant.amountOwed),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold
+                Text(
+                    text = "@${participant.username}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            )
-            
-            val statusText = when {
-                participant.isPaid -> "Pagado"
-                participant.isConfirmed -> "Confirmado"
-                participant.isPending -> "Pendiente"
-                participant.isDeclined -> "Rechazado"
-                else -> participant.status
             }
-            val statusColor = when {
-                participant.isPaid -> MaterialTheme.colorScheme.onPrimaryContainer
-                participant.isConfirmed -> MaterialTheme.colorScheme.secondary
-                participant.isPending -> MaterialTheme.colorScheme.tertiary
-                participant.isDeclined -> MaterialTheme.colorScheme.error
-                else -> MaterialTheme.colorScheme.onSurfaceVariant
-            }
-            
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+
+            // Amount and status
+            Column(
+                horizontalAlignment = Alignment.End
             ) {
-                if (participant.isPaid) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = statusColor,
-                        modifier = Modifier.size(14.dp)
+                Text(
+                    text = currencyFormat.format(participant.amountOwed),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                val statusText = when {
+                    participant.isPaid -> "Pagado"
+                    participant.isConfirmed -> "Confirmado"
+                    participant.isPending -> "Pendiente"
+                    participant.isDeclined -> "Rechazado"
+                    else -> participant.status
+                }
+                val statusColor = when {
+                    participant.isPaid -> MaterialTheme.colorScheme.onPrimaryContainer
+                    participant.isConfirmed -> MaterialTheme.colorScheme.secondary
+                    participant.isPending -> MaterialTheme.colorScheme.tertiary
+                    participant.isDeclined -> MaterialTheme.colorScheme.error
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (participant.isPaid) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = statusColor,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                    Text(
+                        text = statusText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = statusColor
                     )
                 }
-                Text(
-                    text = statusText,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = statusColor
-                )
             }
+        }
+
+        // Action buttons - revealed on selection (creator only)
+        AnimatedVisibility(
+            visible = isSelected && isCreator,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            ParticipantActions(
+                showConfirmPayment = participant.isPaymentPending,
+                showRemove = canRemove,
+                isConfirmingPayment = isConfirmingPayment,
+                isRemoving = isRemoving,
+                onConfirmPayment = onMarkAsPaid,
+                onRemove = onRemove,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }
