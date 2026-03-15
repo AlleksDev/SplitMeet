@@ -1,6 +1,7 @@
 package com.coditos.splitmeet.features.detailOuting.presentation.viewmodels
 
 import android.util.Log
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coditos.splitmeet.features.detailOuting.domain.usecases.AddParticipantUseCase
@@ -226,15 +227,34 @@ class DetailOutingViewModel @Inject constructor(
 
     fun onBiometricAuthDismissed() {
         _uiState.update { it.copy(requireBiometricAuth = null) }
-        }
+    }
 
-        fun onBiometricAuthError(errorMessage: String) {
-            _uiState.update {
-                it.copy(
-                    requireBiometricAuth = null,
-                    error = "Error biométrico: $errorMessage"
-                )
+    fun authenticatePendingPayment(
+        activity: FragmentActivity,
+        participant: Participant
+    ) {
+        fingerPrintManager.authenticate(
+            activity = activity,
+            onSuccess = {
+                onBiometricAuthDismissed()
+                executeConfirmPayment(participant)
+            },
+            onError = { _, errorMessage ->
+                onBiometricAuthError(errorMessage)
+            },
+            onFailed = {
+                onBiometricAuthFailed()
             }
+        )
+    }
+
+    fun onBiometricAuthError(errorMessage: String) {
+        _uiState.update {
+            it.copy(
+                requireBiometricAuth = null,
+                error = "Error biométrico: $errorMessage"
+            )
+        }
     }
 
     fun onBiometricAuthFailed() {

@@ -90,13 +90,6 @@ fun DetailOutingScreen(
     }
 
     val context = androidx.compose.ui.platform.LocalContext.current
-    val hardwareEntryPoint = remember(context) {
-        dagger.hilt.android.EntryPointAccessors.fromApplication(
-            context.applicationContext,
-            com.coditos.splitmeet.core.hardware.domain.FingerPrintManagerEntryPoint::class.java
-        )
-    }
-    val fingerPrintManager = hardwareEntryPoint.getFingerPrintManager()
 
     LaunchedEffect(uiState.requireBiometricAuth) {
         val participant = uiState.requireBiometricAuth
@@ -118,22 +111,7 @@ fun DetailOutingScreen(
 
             if (activity != null) {
                 android.util.Log.d("BiometricFlow", "Launching BiometricPrompt with activity: ${activity.javaClass.name}")
-                fingerPrintManager.authenticate(
-                    activity = activity,
-                    onSuccess = {
-                        android.util.Log.d("BiometricFlow", "Biometric auth SUCCESS")
-                        viewModel.onBiometricAuthDismissed()
-                        viewModel.executeConfirmPayment(participant)
-                    },
-                    onError = { errorCode, errorMessage ->
-                        android.util.Log.e("BiometricFlow", "Biometric auth ERROR: code=$errorCode, msg=$errorMessage")
-                        viewModel.onBiometricAuthError(errorMessage)
-                    },
-                    onFailed = {
-                        android.util.Log.w("BiometricFlow", "Biometric auth FAILED (bad fingerprint)")
-                        viewModel.onBiometricAuthFailed()
-                    }
-                )
+                viewModel.authenticatePendingPayment(activity, participant)
             } else {
                 android.util.Log.e("BiometricFlow", "FragmentActivity NOT FOUND after full unwrap. Last context: ${ctx.javaClass.name}")
                 viewModel.onBiometricAuthError("No se pudo obtener el contexto de la actividad.")
