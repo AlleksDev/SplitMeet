@@ -209,43 +209,43 @@ class DetailOutingViewModel @Inject constructor(
         if (!participant.isPaymentPending) return
 
         if (!fingerPrintManager.hasFingerPrint()) {
-            _uiState.update {
-                it.copy(error = "Tu dispositivo no cuenta con hardware biométrico.")
-            }
+            _uiState.update { it.copy(error = "Tu dispositivo no cuenta con hardware biométrico.") }
             return
         }
 
         if (!fingerPrintManager.hasEnrolledFingerPrints()) {
-            _uiState.update {
-                it.copy(error = "No tienes huellas registradas. Configura la biometría en los ajustes de tu dispositivo.")
-            }
+            _uiState.update { it.copy(error = "No tienes huellas registradas.") }
             return
         }
 
-        _uiState.update { it.copy(requireBiometricAuth = participant) }
+        // ✅ El trigger garantiza que el LaunchedEffect siempre se dispara
+        _uiState.update {
+            it.copy(
+                requireBiometricAuth = participant,
+                biometricAuthTrigger = System.currentTimeMillis()
+            )
+        }
     }
-
-    fun onBiometricAuthDismissed() {
-        _uiState.update { it.copy(requireBiometricAuth = null) }
-    }
-
-    fun authenticatePendingPayment(
-        activity: FragmentActivity,
-        participant: Participant
-    ) {
+    fun authenticatePendingPayment(activity: FragmentActivity, participant: Participant) {
         fingerPrintManager.authenticate(
             activity = activity,
             onSuccess = {
                 onBiometricAuthDismissed()
                 executeConfirmPayment(participant)
             },
-            onError = { _, errorMessage ->
-                onBiometricAuthError(errorMessage)
-            },
-            onFailed = {
-                onBiometricAuthFailed()
-            }
+            onError = { _, errorMessage -> onBiometricAuthError(errorMessage) },
+            onFailed = { onBiometricAuthFailed() }
         )
+    }
+
+    fun onBiometricAuthDismissed() {
+        _uiState.update { it.copy(requireBiometricAuth = null) }
+    }
+
+    // ✅ AGREGA este método en su lugar
+    // La Screen llama directamente al FingerPrintManager a través de un callback
+    fun onBiometricSuccess(participant: Participant) {
+        executeConfirmPayment(participant)
     }
 
     fun onBiometricAuthError(errorMessage: String) {

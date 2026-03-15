@@ -29,7 +29,9 @@ data class DetailOutingUiState(
     
     // Biometric Auth Support
     val requireBiometricAuth: Participant? = null,
-    
+    val biometricAuthTrigger: Long = 0L, // ✅ Nuevo campo
+
+
     // Add participant modal
     val showAddParticipantModal: Boolean = false,
     val searchQuery: String = "",
