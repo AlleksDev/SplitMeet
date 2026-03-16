@@ -67,6 +67,9 @@ class DetailOutingViewModel @Inject constructor(
             // Load participants
             loadParticipants()
 
+            // Load payments and map to participants
+            loadPayments()
+
             // Load items
             loadItems()
 
@@ -131,9 +134,39 @@ class DetailOutingViewModel @Inject constructor(
         )
     }
 
+    private suspend fun loadPayments() {
+        val paymentsResult = useCases.getPayments(outingId)
+        Log.d("DetailOutingViewModel", "Payments result: $paymentsResult")
+
+        paymentsResult.fold(
+            onSuccess = { payments ->
+                // Create a map of participantId -> payment status
+                val paymentStatusMap = payments.associate { it.participantId to it.status }
+                Log.d("DetailOutingViewModel", "Payment status map: $paymentStatusMap")
+                
+                // Update participants with payment status from the map
+                val updatedParticipants = _uiState.value.participants.map { participant ->
+                    val paymentStatus = paymentStatusMap[participant.id]
+                    if (paymentStatus != null) {
+                        participant.copy(paymentStatus = paymentStatus)
+                    } else {
+                        participant
+                    }
+                }
+                
+                _uiState.update { it.copy(participants = updatedParticipants) }
+            },
+            onFailure = { error ->
+                Log.e("DetailOutingViewModel", "Error loading payments", error)
+                // Don't fail the whole UI if payments fail to load
+            }
+        )
+    }
+
     fun refreshData() {
         viewModelScope.launch {
             loadParticipants()
+            loadPayments()
             loadItems()
         }
     }
@@ -288,7 +321,7 @@ class DetailOutingViewModel @Inject constructor(
 
         viewModelScope.launch {
             // Usa el nuevo endpoint que requiere outingId y participantId(participant.id)
-            val result = useCases.confirmParticipantPayment(outingId, participant.userId)
+            val result = useCases.confirmParticipantPayment(outingId, participant.id)
 
             result.fold(
                 onSuccess = {
@@ -523,6 +556,15 @@ class DetailOutingViewModel @Inject constructor(
 
     // Participant selection functions
     fun selectParticipant(participantId: Long) {
+        // Find the participant to check if they're already paid
+        val participant = _uiState.value.participants.find { it.userId == participantId }
+        
+        // Don't allow selection of paid participants - they're read-only
+        if (participant?.isPaid == true) {
+            _uiState.update { it.copy(selectedParticipantId = null) }
+            return
+        }
+        
         _uiState.update {
             if (it.selectedParticipantId == participantId) {
                 it.copy(selectedParticipantId = null)

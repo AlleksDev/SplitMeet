@@ -94,6 +94,12 @@ object DetailOutingUseCaseModule {
 
     @Provides
     @Singleton
+    fun provideGetPaymentsByOutingUseCase(repository: DetailOutingRepository): GetPaymentsByOutingUseCase {
+        return GetPaymentsByOutingUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
     fun provideDetailOutingUseCases(
         getOutingDetail: GetOutingDetailUseCase,
         getParticipants: GetParticipantsUseCase,
@@ -108,7 +114,8 @@ object DetailOutingUseCaseModule {
         getCategories: GetCategoriesUseCase,
         getUserId: GetUserIdUseCase,
         generateOutingQr: GenerateOutingQrUseCase,
-        joinOuting: JoinOutingUseCase
+        joinOuting: JoinOutingUseCase,
+        getPayments: GetPaymentsByOutingUseCase
     ): DetailOutingUseCases {
         return DetailOutingUseCases(
             getOutingDetail = getOutingDetail,
@@ -124,7 +131,8 @@ object DetailOutingUseCaseModule {
             getCategories = getCategories,
             getUserId = getUserId,
             generateOutingQr = generateOutingQr,
-            joinOuting = joinOuting
+            joinOuting = joinOuting,
+            getPayments = getPayments
         )
     }
 }

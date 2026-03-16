@@ -5,6 +5,7 @@ import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.OutingDetailDto
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.OutingItemDto
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.ParticipantDto
+import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.PaymentDto
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.SearchUserDto
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.UpdateOutingRequest
 import com.coditos.splitmeet.features.outing.data.datasources.remote.model.CategoryDto
@@ -65,5 +66,8 @@ interface DetailOutingApi {
 
     @POST("outings/{id}/join")
     suspend fun joinOuting(@Path("id") outingId: Long)
+
+    @GET("payments/outing/{outingId}")
+    suspend fun getPaymentsByOuting(@Path("outingId") outingId: Long): List<PaymentDto>
 
 }
