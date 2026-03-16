@@ -48,7 +48,7 @@ interface DetailOutingApi {
     @PATCH("payments/{id}/confirm")
     suspend fun confirmPayment(@Path("id") paymentId: Long)
 
-    @PATCH("outings/{outing_id}/participants/{participant_id}/confirm")
+    @PATCH("payments/outings/{outing_id}/participants/{participant_id}/confirm")
     suspend fun confirmParticipantPayment(
         @Path("outing_id") outingId: Long,
         @Path("participant_id") participantId: Long
