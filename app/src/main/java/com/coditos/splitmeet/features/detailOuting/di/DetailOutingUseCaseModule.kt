@@ -52,6 +52,12 @@ object DetailOutingUseCaseModule {
 
     @Provides
     @Singleton
+    fun provideConfirmParticipantPaymentUseCase(repository: DetailOutingRepository): ConfirmParticipantPaymentUseCase {
+        return ConfirmParticipantPaymentUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
     fun provideRemoveParticipantUseCase(repository: DetailOutingRepository): RemoveParticipantUseCase {
         return RemoveParticipantUseCase(repository)
     }
@@ -83,6 +89,7 @@ object DetailOutingUseCaseModule {
         searchUsers: SearchUsersUseCase,
         addParticipant: AddParticipantUseCase,
         confirmPayment: ConfirmPaymentUseCase,
+        confirmParticipantPayment: ConfirmParticipantPaymentUseCase,
         removeParticipant: RemoveParticipantUseCase,
         updateOuting: UpdateOutingUseCase,
         deleteOuting: DeleteOutingUseCase,
@@ -96,6 +103,7 @@ object DetailOutingUseCaseModule {
             searchUsers = searchUsers,
             addParticipant = addParticipant,
             confirmPayment = confirmPayment,
+            confirmParticipantPayment = confirmParticipantPayment,
             removeParticipant = removeParticipant,
             updateOuting = updateOuting,
             deleteOuting = deleteOuting,

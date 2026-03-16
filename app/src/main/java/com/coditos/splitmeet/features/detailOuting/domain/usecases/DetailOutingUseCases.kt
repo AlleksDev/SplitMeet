@@ -9,6 +9,7 @@ data class DetailOutingUseCases(
     val searchUsers: SearchUsersUseCase,
     val addParticipant: AddParticipantUseCase,
     val confirmPayment: ConfirmPaymentUseCase,
+    val confirmParticipantPayment: ConfirmParticipantPaymentUseCase,
     val removeParticipant: RemoveParticipantUseCase,
     val updateOuting: UpdateOutingUseCase,
     val deleteOuting: DeleteOutingUseCase,

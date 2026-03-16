@@ -242,12 +242,6 @@ class DetailOutingViewModel @Inject constructor(
         _uiState.update { it.copy(requireBiometricAuth = null) }
     }
 
-    // ✅ AGREGA este método en su lugar
-    // La Screen llama directamente al FingerPrintManager a través de un callback
-    fun onBiometricSuccess(participant: Participant) {
-        executeConfirmPayment(participant)
-    }
-
     fun onBiometricAuthError(errorMessage: String) {
         _uiState.update {
             it.copy(
@@ -267,11 +261,11 @@ class DetailOutingViewModel @Inject constructor(
     }
 
     fun executeConfirmPayment(participant: Participant) {
-        val paymentId = participant.paymentId ?: participant.id
         _uiState.update { it.copy(confirmingPaymentUserId = participant.userId, error = null) }
 
         viewModelScope.launch {
-            val result = useCases.confirmPayment(paymentId)
+            // Usa el nuevo endpoint que requiere outingId y participantId(participant.id)
+            val result = useCases.confirmParticipantPayment(outingId, participant.id)
 
             result.fold(
                 onSuccess = {

@@ -52,6 +52,10 @@ class DetailOutingRepositoryImpl @Inject constructor(
         api.confirmPayment(paymentId)
     }
 
+    override suspend fun confirmParticipantPayment(outingId: Long, participantId: Long) {
+        api.confirmParticipantPayment(outingId, participantId)
+    }
+
     override suspend fun updateOuting(
         outingId: Long,
         name: String,
