@@ -16,5 +16,6 @@ data class DetailOutingUseCases(
     val getCategories: GetCategoriesUseCase,
     val getUserId: GetUserIdUseCase,
     val generateOutingQr: GenerateOutingQrUseCase,
-    val joinOuting: JoinOutingUseCase
+    val joinOuting: JoinOutingUseCase,
+    val getPayments: GetPaymentsByOutingUseCase
 )

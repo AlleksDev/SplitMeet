@@ -10,6 +10,7 @@ import com.coditos.splitmeet.features.detailOuting.domain.entities.OutingItem
 import com.coditos.splitmeet.features.detailOuting.domain.entities.Participant
 import com.coditos.splitmeet.features.detailOuting.domain.entities.SearchUser
 import com.coditos.splitmeet.features.detailOuting.domain.repositories.DetailOutingRepository
+import com.coditos.splitmeet.features.detailOuting.domain.usecases.PaymentData
 import com.coditos.splitmeet.features.outing.data.datasources.remote.mapper.toDomainList as toCategoryDomainList
 import com.coditos.splitmeet.features.outing.domain.entities.Category
 import javax.inject.Inject
@@ -86,5 +87,22 @@ class DetailOutingRepositoryImpl @Inject constructor(
 
     override suspend fun joinOuting(outingId: Long) {
         api.joinOuting(outingId)
+    }
+
+    override suspend fun getPaymentsByOuting(outingId: Long): List<PaymentData> {
+        val response = api.getPaymentsByOuting(outingId)
+        return response.mapNotNull { paymentDto ->
+            // Only include payments with required fields
+            if (paymentDto.id != null && paymentDto.participantId != null) {
+                PaymentData(
+                    id = paymentDto.id,
+                    participantId = paymentDto.participantId,
+                    status = paymentDto.status ?: "pending",
+                    amount = paymentDto.amount ?: 0.0
+                )
+            } else {
+                null
+            }
+        }
     }
 }
