@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -57,16 +58,18 @@ import androidx.fragment.app.FragmentActivity
 @Composable
 fun DetailOutingScreen(
     outingId: Long,
+    joinAutomatically: Boolean = false,
     viewModel: DetailOutingViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToAddProducts: (outingId: Long, categoryId: Long, categoryName: String) -> Unit = { _, _, _ -> }
+    onNavigateToAddProducts: (outingId: Long, categoryId: Long, categoryName: String) -> Unit = { _, _, _ -> },
+    onNavigateToShowQr: (outingId: Long) -> Unit = { _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Load data when screen is displayed
     LaunchedEffect(outingId) {
-        viewModel.loadOutingDetail(outingId)
+        viewModel.loadOutingDetail(outingId, joinAutomatically)
     }
 
     // Set up delete success callback
@@ -116,6 +119,14 @@ fun DetailOutingScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Volver"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { onNavigateToShowQr(outingId) }) {
+                            Icon(
+                                imageVector = Icons.Filled.QrCode,
+                                contentDescription = "Mostrar código QR"
                             )
                         }
                     },

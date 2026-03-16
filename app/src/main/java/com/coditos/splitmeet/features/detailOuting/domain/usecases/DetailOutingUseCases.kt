@@ -9,9 +9,12 @@ data class DetailOutingUseCases(
     val searchUsers: SearchUsersUseCase,
     val addParticipant: AddParticipantUseCase,
     val confirmPayment: ConfirmPaymentUseCase,
+    val confirmParticipantPayment: ConfirmParticipantPaymentUseCase,
     val removeParticipant: RemoveParticipantUseCase,
     val updateOuting: UpdateOutingUseCase,
     val deleteOuting: DeleteOutingUseCase,
     val getCategories: GetCategoriesUseCase,
-    val getUserId: GetUserIdUseCase
+    val getUserId: GetUserIdUseCase,
+    val generateOutingQr: GenerateOutingQrUseCase,
+    val joinOuting: JoinOutingUseCase
 )

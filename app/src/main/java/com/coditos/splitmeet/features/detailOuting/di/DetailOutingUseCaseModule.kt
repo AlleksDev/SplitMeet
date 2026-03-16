@@ -52,6 +52,12 @@ object DetailOutingUseCaseModule {
 
     @Provides
     @Singleton
+    fun provideConfirmParticipantPaymentUseCase(repository: DetailOutingRepository): ConfirmParticipantPaymentUseCase {
+        return ConfirmParticipantPaymentUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
     fun provideRemoveParticipantUseCase(repository: DetailOutingRepository): RemoveParticipantUseCase {
         return RemoveParticipantUseCase(repository)
     }
@@ -76,6 +82,18 @@ object DetailOutingUseCaseModule {
 
     @Provides
     @Singleton
+    fun provideGenerateOutingQrUseCase(): GenerateOutingQrUseCase {
+        return GenerateOutingQrUseCase()
+    }
+
+    @Provides
+    @Singleton
+    fun provideJoinOutingUseCase(repository: DetailOutingRepository): JoinOutingUseCase {
+        return JoinOutingUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
     fun provideDetailOutingUseCases(
         getOutingDetail: GetOutingDetailUseCase,
         getParticipants: GetParticipantsUseCase,
@@ -83,11 +101,14 @@ object DetailOutingUseCaseModule {
         searchUsers: SearchUsersUseCase,
         addParticipant: AddParticipantUseCase,
         confirmPayment: ConfirmPaymentUseCase,
+        confirmParticipantPayment: ConfirmParticipantPaymentUseCase,
         removeParticipant: RemoveParticipantUseCase,
         updateOuting: UpdateOutingUseCase,
         deleteOuting: DeleteOutingUseCase,
         getCategories: GetCategoriesUseCase,
-        getUserId: GetUserIdUseCase
+        getUserId: GetUserIdUseCase,
+        generateOutingQr: GenerateOutingQrUseCase,
+        joinOuting: JoinOutingUseCase
     ): DetailOutingUseCases {
         return DetailOutingUseCases(
             getOutingDetail = getOutingDetail,
@@ -96,11 +117,14 @@ object DetailOutingUseCaseModule {
             searchUsers = searchUsers,
             addParticipant = addParticipant,
             confirmPayment = confirmPayment,
+            confirmParticipantPayment = confirmParticipantPayment,
             removeParticipant = removeParticipant,
             updateOuting = updateOuting,
             deleteOuting = deleteOuting,
             getCategories = getCategories,
-            getUserId = getUserId
+            getUserId = getUserId,
+            generateOutingQr = generateOutingQr,
+            joinOuting = joinOuting
         )
     }
 }

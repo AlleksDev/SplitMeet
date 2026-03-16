@@ -14,6 +14,7 @@ interface DetailOutingRepository {
     suspend fun addParticipant(outingId: Long, userId: Long): Boolean
     suspend fun removeParticipant(outingId: Long, userId: Long)
     suspend fun confirmPayment(paymentId: Long)
+    suspend fun confirmParticipantPayment(outingId: Long, participantId: Long)
     suspend fun updateOuting(
         outingId: Long,
         name: String,
@@ -24,4 +25,5 @@ interface DetailOutingRepository {
     ): OutingDetail
     suspend fun deleteOuting(outingId: Long)
     suspend fun getCategories(): List<Category>
+    suspend fun joinOuting(outingId: Long)
 }

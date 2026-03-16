@@ -48,6 +48,12 @@ interface DetailOutingApi {
     @PATCH("payments/{id}/confirm")
     suspend fun confirmPayment(@Path("id") paymentId: Long)
 
+    @PATCH("payments/outings/{outing_id}/participants/{participant_id}/confirm")
+    suspend fun confirmParticipantPayment(
+        @Path("outing_id") outingId: Long,
+        @Path("participant_id") participantId: Long
+    )
+
     @GET("outings/{id}/items")
     suspend fun getOutingItems(@Path("id") outingId: Long): List<OutingItemDto>
 
@@ -56,4 +62,8 @@ interface DetailOutingApi {
 
     @GET("categories")
     suspend fun getCategories(): List<CategoryDto>
+
+    @POST("outings/{id}/join")
+    suspend fun joinOuting(@Path("id") outingId: Long)
+
 }

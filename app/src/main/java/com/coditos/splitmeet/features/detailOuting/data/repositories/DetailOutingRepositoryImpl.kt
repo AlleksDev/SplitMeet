@@ -52,6 +52,10 @@ class DetailOutingRepositoryImpl @Inject constructor(
         api.confirmPayment(paymentId)
     }
 
+    override suspend fun confirmParticipantPayment(outingId: Long, participantId: Long) {
+        api.confirmParticipantPayment(outingId, participantId)
+    }
+
     override suspend fun updateOuting(
         outingId: Long,
         name: String,
@@ -78,5 +82,9 @@ class DetailOutingRepositoryImpl @Inject constructor(
     override suspend fun getCategories(): List<Category> {
         val response = api.getCategories()
         return response.toCategoryDomainList()
+    }
+
+    override suspend fun joinOuting(outingId: Long) {
+        api.joinOuting(outingId)
     }
 }
