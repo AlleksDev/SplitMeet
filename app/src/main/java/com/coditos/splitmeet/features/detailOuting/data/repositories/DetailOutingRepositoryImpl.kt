@@ -83,4 +83,8 @@ class DetailOutingRepositoryImpl @Inject constructor(
         val response = api.getCategories()
         return response.toCategoryDomainList()
     }
+
+    override suspend fun joinOuting(outingId: Long) {
+        api.joinOuting(outingId)
+    }
 }

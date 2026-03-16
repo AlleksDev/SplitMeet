@@ -109,6 +109,10 @@ dependencies {
     // ML Kit Barcode Scanning
     implementation(libs.mlkit.barcode)
 
+    // ZXing for QR Code Generation
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
     implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
     implementation("com.google.firebase:firebase-messaging")
 

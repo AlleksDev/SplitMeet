@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -28,7 +29,10 @@ fun QrCameraScreen(
     qrScanner: AndroidQrScanner,
     onQrDetected: (String) -> Unit,
     onError: (Exception) -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    isProcessing: Boolean = false,
+    errorMessage: String? = null,
+    onRetryAfterError: () -> Unit = {}
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -121,6 +125,60 @@ fun QrCameraScreen(
                 color = Color.White,
                 fontSize = 12.sp
             )
+        }
+
+        // Loading overlay when processing
+        if (isProcessing) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(64.dp),
+                    color = Color.White,
+                    strokeWidth = 4.dp
+                )
+            }
+        }
+
+        // Error overlay when there's an error
+        if (errorMessage != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.7f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(32.dp)
+                        .background(Color(0xFF1F1F1F), shape = RoundedCornerShape(8.dp))
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Error",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = errorMessage,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = onRetryAfterError,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Reintentar")
+                    }
+                }
+            }
         }
     }
 }

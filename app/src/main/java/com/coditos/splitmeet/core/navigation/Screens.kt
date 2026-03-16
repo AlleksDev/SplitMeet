@@ -15,7 +15,7 @@ object Register
 object CreateOuting
 
 @Serializable
-data class OutingDetail(val outingId: Long)
+data class OutingDetail(val outingId: Long, val joinAutomatically: Boolean = false)
 
 @Serializable
 data class AddProducts(
@@ -35,3 +35,6 @@ object CreateGroup
 
 @Serializable
 data class GroupDetail(val groupId: Long)
+
+@Serializable
+data class ShowOutingQr(val outingId: Long)

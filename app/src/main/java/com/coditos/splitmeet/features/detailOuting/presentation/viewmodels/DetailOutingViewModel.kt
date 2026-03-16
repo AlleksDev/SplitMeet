@@ -41,7 +41,7 @@ class DetailOutingViewModel @Inject constructor(
     
     private var onDeleteSuccess: (() -> Unit)? = null
 
-    fun loadOutingDetail(outingId: Long) {
+    fun loadOutingDetail(outingId: Long, joinAutomatically: Boolean = false) {
         this.outingId = outingId
         _uiState.update { it.copy(isLoading = true, error = null) }
 
@@ -70,8 +70,31 @@ class DetailOutingViewModel @Inject constructor(
             // Load items
             loadItems()
 
+            // If coming from QR scan, join automatically
+            if (joinAutomatically && currentUserId != null) {
+                joinOutingAutomatically(currentUserId.toLong())
+            }
+
             _uiState.update { it.copy(isLoading = false) }
         }
+    }
+
+    private suspend fun joinOutingAutomatically(userId: Long) {
+        Log.d("DetailOutingViewModel", "Attempting to join outing automatically for user: $userId")
+        
+        val result = useCases.addParticipant(outingId, userId)
+        result.fold(
+            onSuccess = {
+                Log.d("DetailOutingViewModel", "Successfully joined outing")
+                showSuccessMessage("¡Te has unido a la salida!")
+                // Reload participants to reflect the new join
+                loadParticipants()
+            },
+            onFailure = { error ->
+                Log.e("DetailOutingViewModel", "Error joining outing: ${error.message}")
+                // Don't show error for auto-join, might be already a participant
+            }
+        )
     }
 
     private suspend fun loadParticipants() {
@@ -265,7 +288,7 @@ class DetailOutingViewModel @Inject constructor(
 
         viewModelScope.launch {
             // Usa el nuevo endpoint que requiere outingId y participantId(participant.id)
-            val result = useCases.confirmParticipantPayment(outingId, participant.id)
+            val result = useCases.confirmParticipantPayment(outingId, participant.userId)
 
             result.fold(
                 onSuccess = {

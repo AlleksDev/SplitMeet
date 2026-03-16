@@ -63,4 +63,7 @@ interface DetailOutingApi {
     @GET("categories")
     suspend fun getCategories(): List<CategoryDto>
 
+    @POST("outings/{id}/join")
+    suspend fun joinOuting(@Path("id") outingId: Long)
+
 }

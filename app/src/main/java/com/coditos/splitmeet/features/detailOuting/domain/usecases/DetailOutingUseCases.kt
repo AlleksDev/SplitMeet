@@ -14,5 +14,7 @@ data class DetailOutingUseCases(
     val updateOuting: UpdateOutingUseCase,
     val deleteOuting: DeleteOutingUseCase,
     val getCategories: GetCategoriesUseCase,
-    val getUserId: GetUserIdUseCase
+    val getUserId: GetUserIdUseCase,
+    val generateOutingQr: GenerateOutingQrUseCase,
+    val joinOuting: JoinOutingUseCase
 )

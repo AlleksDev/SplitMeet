@@ -25,4 +25,5 @@ interface DetailOutingRepository {
     ): OutingDetail
     suspend fun deleteOuting(outingId: Long)
     suspend fun getCategories(): List<Category>
+    suspend fun joinOuting(outingId: Long)
 }
