@@ -18,5 +18,7 @@ data class OutingDto(
     @SerializedName(value = "ParticipantCount", alternate = ["participantCount", "participant_count"])
     val participantCount: Int,
     @SerializedName(value = "PaidCount", alternate = ["paidCount", "paid_count"])
-    val paidCount: Int
+    val paidCount: Int,
+    @SerializedName(value = "CreatedAt", alternate = ["createdAt", "created_at"])
+    val createdAt: String? = null
 )

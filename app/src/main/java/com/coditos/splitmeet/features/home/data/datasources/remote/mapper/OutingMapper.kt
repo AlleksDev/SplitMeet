@@ -13,7 +13,8 @@ fun OutingDto.toDomain(): Outing {
         splitType = this.splitType,
         totalAmount = this.totalAmount,
         participantCount = this.participantCount,
-        paidCount = this.paidCount
+        paidCount = this.paidCount,
+        createdAt = this.createdAt
     )
 }
 
@@ -24,4 +25,5 @@ fun OutingDto.toEntity() = OutingEntity(id,
                                         splitType,
                                         totalAmount,
                                         participantCount,
-                                        paidCount)
+                                        paidCount,
+                                        createdAt)

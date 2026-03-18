@@ -208,15 +208,27 @@ fun ParticipantItem(
     val avatarColor = avatarColors[participant.id.hashCode().mod(avatarColors.size).let { if (it < 0) -it else it }]
 
     val selectedBorderColor = Color(0xFFE67E22)
-    val successColor = MaterialTheme.colorScheme.secondary  // Using tertiary as success-like color
-    // MUCH MORE VISIBLE background for paid participants
-    val paidBackgroundColor = successColor.copy(alpha = 0.25f)  // Changed from 0.08f to 0.25f
-
-    // Non-paid participants can be selected and clicked; paid participants are read-only
-    val canBeSelected = !participant.isPaid && isCreator
-    val shouldShowBorder = isSelected || participant.isPaid
-    val borderColor = when {
-        participant.isPaid -> successColor
+    val successColor = Color(0xFF4CAF50)  // Explicit success green
+    
+    // Determine UI state based on payment status
+    val isPaid = participant.isPaid
+    val isInteractive = !isPaid && isCreator
+    
+    // Background colors: more prominent for paid status
+    val containerColor = when {
+        isPaid -> successColor.copy(alpha = 0.15f)
+        isSelected -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+        else -> MaterialTheme.colorScheme.surfaceContainerHigh
+    }
+    
+    val borderWidth = when {
+        isPaid -> 2.dp
+        isSelected -> 2.dp
+        else -> 0.dp
+    }
+    
+    val borderColorActual = when {
+        isPaid -> successColor
         isSelected -> selectedBorderColor
         else -> Color.Transparent
     }
@@ -228,37 +240,29 @@ fun ParticipantItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(
-                    if (shouldShowBorder) {
-                        Modifier.border(
-                            width = 2.dp,
-                            color = borderColor,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                    } else {
-                        Modifier
-                    }
-                )
-                .background(
-                    color = if (participant.isPaid) paidBackgroundColor else MaterialTheme.colorScheme.surfaceContainerHigh,
+                .border(
+                    width = borderWidth,
+                    color = borderColorActual,
                     shape = RoundedCornerShape(12.dp)
                 )
-                // ONLY allow clicks for non-paid participants when creator
+                .background(
+                    color = containerColor,
+                    shape = RoundedCornerShape(12.dp)
+                )
                 .then(
-                    if (canBeSelected) {
+                    if (isInteractive) {
                         Modifier.clickable(
                             enabled = true,
                             onClick = onClick
                         )
                     } else {
-                        // Paid participants: completely non-interactive
                         Modifier
                     }
                 )
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar
+            // Avatar with optional paid indicator
             Box(
                 modifier = Modifier
                     .size(44.dp)
@@ -283,13 +287,15 @@ fun ParticipantItem(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
                         text = participant.name,
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Medium
-                        )
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        color = if (isPaid) MaterialTheme.colorScheme.onSurface 
+                                else MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Text(
@@ -299,28 +305,31 @@ fun ParticipantItem(
                 )
             }
 
-            // Amount and status
+            // Amount and status column
             Column(
-                horizontalAlignment = Alignment.End
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = currencyFormat.format(participant.amountOwed),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold
                     ),
-                    color = if (participant.isPaid) successColor else MaterialTheme.colorScheme.onSurface
+                    color = if (isPaid) successColor else MaterialTheme.colorScheme.onSurface
                 )
 
-                Log.d("ParticipantItem", "Status: ${participant.paymentStatus}")
+                Log.d("ParticipantItem", "PaymentStatus: ${participant.paymentStatus}, isPaid: $isPaid")
+                
                 val statusText = when {
-                    participant.isPaid -> "Pagado"
+                    isPaid -> "Pagado"
                     participant.isConfirmed -> "Confirmado"
                     participant.isPending -> "Pendiente"
                     participant.isDeclined -> "Rechazado"
                     else -> participant.status
                 }
+                
                 val statusColor = when {
-                    participant.isPaid -> successColor
+                    isPaid -> successColor
                     participant.isConfirmed -> MaterialTheme.colorScheme.secondary
                     participant.isPending -> MaterialTheme.colorScheme.tertiary
                     participant.isDeclined -> MaterialTheme.colorScheme.error
@@ -331,26 +340,27 @@ fun ParticipantItem(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    if (participant.isPaid) {
+                    if (isPaid) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
+                            contentDescription = "Pagado",
                             tint = statusColor,
                             modifier = Modifier.size(18.dp)
                         )
                     } else if (participant.isConfirmed) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = null,
+                            contentDescription = "Confirmado",
                             tint = statusColor,
                             modifier = Modifier.size(14.dp)
                         )
                     }
                     Text(
                         text = statusText,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = statusColor,
-                        fontWeight = if (participant.isPaid) FontWeight.Bold else FontWeight.Normal
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontWeight = if (isPaid) FontWeight.Bold else FontWeight.Normal
+                        ),
+                        color = statusColor
                     )
                 }
             }
@@ -358,7 +368,7 @@ fun ParticipantItem(
 
         // Action buttons - revealed on selection (creator only, but NEVER for paid participants)
         AnimatedVisibility(
-            visible = isSelected && isCreator && !participant.isPaid,
+            visible = isSelected && isCreator && !isPaid,
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
