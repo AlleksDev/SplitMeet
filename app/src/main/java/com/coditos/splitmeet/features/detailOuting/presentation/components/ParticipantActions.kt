@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -35,34 +36,45 @@ fun EliminarParticipanteButton(
     OutlinedButton(
         onClick = onClick,
         enabled = !isRemoving,
-        modifier = modifier.height(38.dp),
-        shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, colors.errorContainer),
+        modifier = modifier
+            .height(40.dp),
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(
+            width = 1.5.dp,
+            color = if (isRemoving) colors.error.copy(alpha = 0.5f) else colors.error
+        ),
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = colors.errorContainer,
-            disabledContainerColor = colors.errorContainer.copy(alpha = 0.5f),
-            disabledContentColor = colors.onErrorContainer.copy(alpha = 0.4f)
+            contentColor = if (isRemoving) colors.error.copy(alpha = 0.5f) else colors.error,
+            disabledContentColor = colors.error.copy(alpha = 0.4f)
         )
     ) {
         if (isRemoving) {
             CircularProgressIndicator(
-                modifier = Modifier.size(16.dp),
-                strokeWidth = 2.dp,
-                color = colors.onErrorContainer
+                modifier = Modifier.size(14.dp),
+                strokeWidth = 1.5.dp,
+                color = colors.error.copy(alpha = 0.5f)
             )
             Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "Eliminando...",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Medium
+                )
+            )
         } else {
             Icon(
                 imageVector = Icons.Outlined.Delete,
-                contentDescription = null,
+                contentDescription = "Eliminar participante",
                 modifier = Modifier.size(16.dp)
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "Eliminar",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Medium
+                )
+            )
         }
-        Text(
-            text = "Eliminar",
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 
@@ -73,38 +85,48 @@ fun ConfirmarPagoButton(
     modifier: Modifier = Modifier
 ) {
     val colors = MaterialTheme.colorScheme
+    val successColor = Color(0xFF4CAF50)
 
     FilledTonalButton(
         onClick = onClick,
         enabled = !isConfirming,
-        modifier = modifier.height(38.dp),
-        shape = RoundedCornerShape(20.dp),
+        modifier = modifier
+            .height(40.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.filledTonalButtonColors(
-            containerColor = colors.primaryContainer,
-            contentColor = colors.onPrimaryContainer,
-            disabledContainerColor = colors.primaryContainer.copy(alpha = 0.5f),
-            disabledContentColor = colors.onPrimaryContainer.copy(alpha = 0.4f)
+            containerColor = successColor.copy(alpha = 0.2f),
+            contentColor = successColor,
+            disabledContainerColor = successColor.copy(alpha = 0.1f),
+            disabledContentColor = successColor.copy(alpha = 0.4f)
         )
     ) {
         if (isConfirming) {
             CircularProgressIndicator(
-                modifier = Modifier.size(16.dp),
-                strokeWidth = 2.dp,
-                color = colors.onPrimaryContainer
+                modifier = Modifier.size(14.dp),
+                strokeWidth = 1.5.dp,
+                color = successColor
             )
             Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "Confirmando...",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Medium
+                )
+            )
         } else {
             Icon(
                 imageVector = Icons.Outlined.CheckCircle,
-                contentDescription = null,
+                contentDescription = "Confirmar pago",
                 modifier = Modifier.size(16.dp)
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "Confirmar pago",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Medium
+                )
+            )
         }
-        Text(
-            text = "Confirmar pago",
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 

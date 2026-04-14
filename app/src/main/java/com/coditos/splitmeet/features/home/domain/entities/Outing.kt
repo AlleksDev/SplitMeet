@@ -8,5 +8,6 @@ data class Outing(
     val splitType: String,
     val totalAmount: Float,
     val participantCount: Int,
-    val paidCount: Int
+    val paidCount: Int,
+    val createdAt: String? = null
 )

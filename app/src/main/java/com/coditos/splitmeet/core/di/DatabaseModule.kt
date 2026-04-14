@@ -3,6 +3,7 @@ package com.coditos.splitmeet.core.di
 import android.content.Context
 import androidx.room.Room
 import com.coditos.splitmeet.core.database.AppDatabase
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,10 +21,15 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "app_database"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
     fun provideOutingDao(db: AppDatabase) = db.outingDao()
-
+    
+    @Provides
+    fun provideParticipantDao(db: AppDatabase) = db.participantDao()
 }
+
