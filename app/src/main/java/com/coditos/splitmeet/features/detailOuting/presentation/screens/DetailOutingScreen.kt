@@ -222,6 +222,8 @@ fun DetailOutingScreen(
                                 outingDetail = uiState.outingDetail!!,
                                 participantCount = uiState.participants.size,
                                 amountPerPerson = uiState.amountPerPerson,
+                                isCalculating = uiState.isCalculatingSplits,
+                                onCalculateClick = { viewModel.calculateSplits() },
                                 onEditClick = { viewModel.showEditModal() },
                                 onDeleteClick = { viewModel.showDeleteConfirmation() }
                             )

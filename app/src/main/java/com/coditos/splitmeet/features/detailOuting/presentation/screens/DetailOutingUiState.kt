@@ -56,7 +56,10 @@ data class DetailOutingUiState(
     
     // Success/Error messages
     val successMessage: String? = null,
-    val showSuccessMessage: Boolean = false
+    val showSuccessMessage: Boolean = false,
+    
+    // Calculates
+    val isCalculatingSplits: Boolean = false
 ) {
     val totalItems: Double
         get() = items.sumOf { it.subtotal }

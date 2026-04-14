@@ -23,6 +23,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +43,8 @@ fun OutingInfoCard(
     participantCount: Int,
     amountPerPerson: Double,
     modifier: Modifier = Modifier,
+    isCalculating: Boolean = false,
+    onCalculateClick: () -> Unit = {},
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {}
 ) {
@@ -269,6 +274,22 @@ fun OutingInfoCard(
                         ),
                         color = MaterialTheme.colorScheme.primary
                     )
+                }
+            }
+
+            if (outingDetail.isEditable) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = onCalculateClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isCalculating,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
+                ) {
+                    if (isCalculating) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    } else {
+                        Text("Recalcular Saldos")
+                    }
                 }
             }
         }

@@ -14,7 +14,8 @@ fun OutingDto.toDomain(): Outing {
         totalAmount = this.totalAmount,
         participantCount = this.participantCount,
         paidCount = this.paidCount,
-        createdAt = this.createdAt
+        createdAt = this.createdAt,
+        status = this.status
     )
 }
 
@@ -26,4 +27,5 @@ fun OutingDto.toEntity() = OutingEntity(id,
                                         totalAmount,
                                         participantCount,
                                         paidCount,
-                                        createdAt)
+                                        createdAt,
+                                        status)

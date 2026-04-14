@@ -1,6 +1,7 @@
 package com.coditos.splitmeet.features.outing.presentation.screens
 
 import com.coditos.splitmeet.features.outing.domain.entities.Category
+import com.coditos.splitmeet.features.group.domain.entities.Group
 import com.coditos.splitmeet.features.outing.domain.entities.SplitType
 
 data class CreateOutingUiState(
@@ -19,13 +20,17 @@ data class CreateOutingUiState(
     // Dropdown data
     val categories: List<Category> = emptyList(),
     val splitTypes: List<SplitType> = SplitType.getAll(),
+    val groups: List<Group> = emptyList(),
+    val selectedGroup: Group? = null,
     val isCategoriesLoading: Boolean = false,
+    val isGroupsLoading: Boolean = false,
     
     // Validation
     val nameError: String? = null,
     val dateError: String? = null,
     val categoryError: String? = null,
-    val splitTypeError: String? = null
+    val splitTypeError: String? = null,
+    val groupError: String? = null
 ) {
     val isFormValid: Boolean
         get() = name.isNotBlank() && 

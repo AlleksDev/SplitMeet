@@ -62,7 +62,7 @@ object NetworkModule {
     @SplitmeetRetrofit
     fun provideRetrofit(@SplitmeetRetrofit okHttpClient: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://frimeet.fun/")
+            .baseUrl(com.coditos.splitmeet.BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()

@@ -8,6 +8,7 @@ import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.PaymentDto
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.SearchUserDto
 import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.UpdateOutingRequest
+import com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.ConfirmParticipationRequest
 import com.coditos.splitmeet.features.outing.data.datasources.remote.model.CategoryDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -21,6 +22,9 @@ interface DetailOutingApi {
 
     @GET("outings/{id}")
     suspend fun getOutingById(@Path("id") id: Long): OutingDetailDto
+
+    @GET("outings/{id}/calculate")
+    suspend fun calculateSplits(@Path("id") id: Long): com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsResponseDto
 
     @PATCH("outings/{id}")
     suspend fun updateOuting(
@@ -39,6 +43,12 @@ interface DetailOutingApi {
         @Path("id") outingId: Long,
         @Body request: AddParticipantRequest
     ): AddParticipantResponse
+    
+    @PATCH("outings/{id}/participants/confirm")
+    suspend fun confirmParticipation(
+        @Path("id") outingId: Long,
+        @Body request: ConfirmParticipationRequest
+    )
 
     @DELETE("outings/{outingId}/participants/{userId}")
     suspend fun removeParticipant(
