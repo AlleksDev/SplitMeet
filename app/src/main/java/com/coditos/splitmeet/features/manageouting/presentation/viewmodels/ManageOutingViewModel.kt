@@ -24,6 +24,7 @@ class ManageOutingViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        Log.d("ManageOutingViewModel", "ManageOutingViewModel initialized")
         loadCategories()
     }
 

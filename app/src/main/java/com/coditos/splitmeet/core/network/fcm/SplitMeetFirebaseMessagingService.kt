@@ -15,16 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-/**
- * Handles incoming FCM messages and token refreshes.
- *
- * - Background messages: Android shows the notification automatically using the
- *   `notification` payload and channel `splitmeet_alerts_high`.
- * - Foreground messages: [onMessageReceived] builds a local notification so the
- *   user still sees it.
- * - Token refresh: [onNewToken] persists the token in DataStore for later
- *   registration with the backend.
- */
+
 class SplitMeetFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
@@ -122,8 +113,8 @@ class SplitMeetFirebaseMessagingService : FirebaseMessagingService() {
                 )
 
                 notificationBuilder
-                    .addAction(0, "Aceptar \u2705", acceptPendingIntent)
-                    .addAction(0, "Rechazar \u274C", rejectPendingIntent)
+                    .addAction(0, "Aceptar", acceptPendingIntent)
+                    .addAction(0, "Rechazar", rejectPendingIntent)
             }
         }
 

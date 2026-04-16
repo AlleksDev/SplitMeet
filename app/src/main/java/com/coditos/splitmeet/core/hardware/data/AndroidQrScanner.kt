@@ -46,6 +46,7 @@ class AndroidQrScanner @Inject constructor(
         onQrDetected: (String) -> Unit,
         onError: (Exception) -> Unit
     ) {
+
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener({
             try {

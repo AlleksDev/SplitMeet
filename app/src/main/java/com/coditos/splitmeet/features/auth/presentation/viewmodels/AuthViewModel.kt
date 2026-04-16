@@ -58,7 +58,7 @@ class AuthViewModel @Inject constructor(
                     _uiState.update { currentState ->
                         currentState.copy(
                             isLoading = false,
-                            error = error.message
+                            error = getFriendlyErrorMessage(error)
                         )
                     }
                 }
@@ -93,7 +93,7 @@ class AuthViewModel @Inject constructor(
                     _uiState.update { currentState ->
                         currentState.copy(
                             isLoading = false,
-                            error = error.message
+                            error = getFriendlyErrorMessage(error)
                         )
                     }
                 }
@@ -125,7 +125,7 @@ class AuthViewModel @Inject constructor(
                 _uiState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
-                        error = "Registro exitoso pero falló el inicio de sesión: ${error.message}"
+                        error = "Registro exitoso, pero no pudimos iniciar sesión: ${getFriendlyErrorMessage(error)}"
                     )
                 }
             }
@@ -139,6 +139,21 @@ class AuthViewModel @Inject constructor(
     private fun registerFcmToken() {
         viewModelScope.launch {
             fcmTokenManager.registerTokenWithBackend()
+        }
+    }
+
+    private fun getFriendlyErrorMessage(error: Throwable?): String {
+        val msg = error?.message?.lowercase() ?: return "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+        
+        return when {
+            msg.contains("401") || msg.contains("unauthorized") -> "Correo electrónico o contraseña incorrectos."
+            msg.contains("400") || msg.contains("bad request") -> "Por favor, verifica que los datos ingresados sean correctos."
+            msg.contains("404") -> "Usuario no encontrado."
+            msg.contains("409") || msg.contains("conflict") -> "Ya existe una cuenta con estos datos."
+            msg.contains("timeout") -> "La conexión tardó demasiado. Revisa tu internet e inténtalo de nuevo."
+            msg.contains("network") || msg.contains("unknownhost") || msg.contains("connect") -> "No hay conexión a internet. Revisa tu red."
+            msg.contains("500") || msg.contains("internal") -> "Problemas con el servidor. Por favor, inténtalo más tarde."
+            else -> "No pudimos completar la acción. Inténtalo de nuevo."
         }
     }
 

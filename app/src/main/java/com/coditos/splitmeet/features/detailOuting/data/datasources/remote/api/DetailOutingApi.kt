@@ -23,8 +23,11 @@ interface DetailOutingApi {
     @GET("outings/{id}")
     suspend fun getOutingById(@Path("id") id: Long): OutingDetailDto
 
-    @GET("outings/{id}/calculate")
-    suspend fun calculateSplits(@Path("id") id: Long): com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsResponseDto
+    @POST("outings/{id}/calculate")
+    suspend fun calculateSplits(
+        @Path("id") id: Long,
+        @Body request: com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsRequest? = null
+    ): com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsResponseDto
 
     @PATCH("outings/{id}")
     suspend fun updateOuting(
@@ -78,6 +81,6 @@ interface DetailOutingApi {
     suspend fun joinOuting(@Path("id") outingId: Long)
 
     @GET("payments/outing/{outingId}")
-    suspend fun getPaymentsByOuting(@Path("outingId") outingId: Long): List<PaymentDto>
+    suspend fun getPaymentsByOuting(@Path("outingId") outingId: Long): List<PaymentDto>?
 
 }
