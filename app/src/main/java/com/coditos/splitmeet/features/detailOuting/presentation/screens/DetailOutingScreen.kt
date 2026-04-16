@@ -250,6 +250,15 @@ fun DetailOutingScreen(
                                 }
                             )
 
+                            if (uiState.outingDetail?.splitType == "single_payer" && uiState.outingDetail?.isEditable == true) {
+                                com.coditos.splitmeet.features.detailOuting.presentation.components.SinglePayerSelection(
+                                    participants = uiState.participants,
+                                    selectedPayerId = uiState.selectedSinglePayerId,
+                                    errorMessage = uiState.singlePayerError,
+                                    onSelectPayer = { viewModel.selectSinglePayer(it) }
+                                )
+                            }
+
                             // Participants section
                             ParticipantsSection(
                                 participants = uiState.participants,

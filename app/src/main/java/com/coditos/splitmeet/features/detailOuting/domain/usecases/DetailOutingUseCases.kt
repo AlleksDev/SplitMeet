@@ -5,6 +5,7 @@ import com.coditos.splitmeet.core.session.domain.usecases.GetUserIdUseCase
 data class DetailOutingUseCases(
     val getOutingDetail: GetOutingDetailUseCase,
     val getParticipants: GetParticipantsUseCase,
+    val observeParticipants: ObserveParticipantsUseCase,
     val getOutingItems: GetOutingItemsUseCase,
     val searchUsers: SearchUsersUseCase,
     val addParticipant: AddParticipantUseCase,

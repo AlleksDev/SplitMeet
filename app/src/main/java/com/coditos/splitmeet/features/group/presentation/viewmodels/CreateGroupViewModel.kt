@@ -52,11 +52,25 @@ class CreateGroupViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = error.message ?: "Error al crear el grupo"
+                            error = getFriendlyErrorMessage(error)
                         )
                     }
                 }
             )
+        }
+    }
+
+    private fun getFriendlyErrorMessage(error: Throwable?): String {
+        val msg = error?.message?.lowercase() ?: return "Ocurrió un error inesperado al intentar crear el grupo."
+
+        return when {
+            msg.contains("401") || msg.contains("unauthorized") -> "Tu sesión ha expirado. Por favor, vuelve a iniciar sesión."
+            msg.contains("400") || msg.contains("bad request") -> "Verifica que los datos ingresados sean correctos."
+            msg.contains("409") || msg.contains("conflict") -> "Ya existe un grupo con un nombre similar. Intenta con otro nombre."
+            msg.contains("timeout") -> "La conexión tardó demasiado. Revisa tu internet e inténtalo de nuevo."
+            msg.contains("network") || msg.contains("unknownhost") || msg.contains("connect") -> "No hay conexión a internet. Revisa tu red."
+            msg.contains("500") || msg.contains("internal") -> "Problemas con el servidor. Por favor, inténtalo más tarde."
+            else -> "No pudimos crear el grupo en este momento. Inténtalo de nuevo."
         }
     }
 

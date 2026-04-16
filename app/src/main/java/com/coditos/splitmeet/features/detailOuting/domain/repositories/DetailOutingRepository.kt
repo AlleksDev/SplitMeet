@@ -10,6 +10,7 @@ import com.coditos.splitmeet.features.outing.domain.entities.Category
 interface DetailOutingRepository {
     suspend fun getOutingDetail(outingId: Long): OutingDetail
     suspend fun getParticipants(outingId: Long): List<Participant>
+    fun observeParticipants(outingId: Long): kotlinx.coroutines.flow.Flow<List<Participant>>
     suspend fun getOutingItems(outingId: Long): List<OutingItem>
     suspend fun searchUsers(username: String): List<SearchUser>
     suspend fun addParticipant(outingId: Long, userId: Long): Boolean
@@ -28,5 +29,5 @@ interface DetailOutingRepository {
     suspend fun getCategories(): List<Category>
     suspend fun joinOuting(outingId: Long)
     suspend fun getPaymentsByOuting(outingId: Long): List<PaymentData>
-    suspend fun calculateSplits(outingId: Long): com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsResponseDto
+    suspend fun calculateSplits(outingId: Long, singlePayerId: Long? = null): com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsResponseDto
 }

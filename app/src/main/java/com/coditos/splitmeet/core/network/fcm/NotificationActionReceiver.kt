@@ -72,7 +72,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
     private fun updateNotificationContent(context: Context, notificationId: Int, accepted: Boolean) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         
-        val statusText = if (accepted) "Invitación Aceptada \u2705" else "Invitación Rechazada \u274C"
+        val statusText = if (accepted) "Invitación Aceptada" else "Invitación Rechazada"
 
         val updatedNotification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(com.coditos.splitmeet.R.mipmap.ic_launcher)

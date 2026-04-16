@@ -38,12 +38,14 @@ class DetailOutingViewModel @Inject constructor(
 
     private var outingId: Long = 0
     private var searchJob: Job? = null
-    
     private var onDeleteSuccess: (() -> Unit)? = null
+    private var participantsObserveJob: Job? = null
 
     fun loadOutingDetail(outingId: Long, joinAutomatically: Boolean = false) {
         this.outingId = outingId
         _uiState.update { it.copy(isLoading = true, error = null) }
+
+        startObservingParticipants()
 
         viewModelScope.launch {
             // Load outing detail
@@ -55,30 +57,57 @@ class DetailOutingViewModel @Inject constructor(
                     _uiState.update { it.copy(outingDetail = detail) }
                 },
                 onFailure = { error ->
-                    _uiState.update { it.copy(error = error.message) }
+                    _uiState.update { it.copy(error = error.message ?: "Error al cargar la salida. Por favor, reintenta.") }
                 }
             )
 
-            // Check if current user is the creator
-            val currentUserId = useCases.getUserId()
-            val isCreator = _uiState.value.outingDetail?.creatorId == currentUserId?.toLong()
-            _uiState.update { it.copy(isCreator = isCreator) }
+            // Only load children entities if we successfully loaded the parent Outing
+            // This prevents Foreign Key constraints from failing.
+            if (detailResult.isSuccess) {
+                // Check if current user is the creator
+                val currentUserId = useCases.getUserId()
+                val isCreator = _uiState.value.outingDetail?.creatorId == currentUserId?.toLong()
+                _uiState.update { it.copy(isCreator = isCreator) }
 
-            // Load participants
-            loadParticipants()
+                // Trigger API sync for participants
+                loadParticipants()
 
-            // Load payments and map to participants
-            loadPayments()
+                // Load payments and map to participants
+                loadPayments()
 
-            // Load items
-            loadItems()
+                // Load items
+                loadItems()
 
-            // If coming from QR scan, join automatically
-            if (joinAutomatically && currentUserId != null) {
-                joinOutingAutomatically(currentUserId.toLong())
+                // If coming from QR scan, join automatically
+                if (joinAutomatically && currentUserId != null) {
+                    joinOutingAutomatically(currentUserId.toLong())
+                }
             }
 
             _uiState.update { it.copy(isLoading = false) }
+        }
+    }
+
+    private fun startObservingParticipants() {
+        participantsObserveJob?.cancel()
+        participantsObserveJob = viewModelScope.launch {
+            useCases.observeParticipants(outingId).collect { flowParticipants ->
+                _uiState.update { state ->
+                    // Preserve existing paymentStatus if not present in flow
+                    val existingPayments = state.participants.associate { it.id to it.paymentStatus }
+                    val updatedList = flowParticipants.map { p ->
+                        if (p.paymentStatus == null && existingPayments[p.id] != null) {
+                            p.copy(paymentStatus = existingPayments[p.id])
+                        } else {
+                            p
+                        }
+                    }
+                    state.copy(
+                        participants = updatedList,
+                        isParticipantsLoading = false
+                    )
+                }
+            }
         }
     }
 
@@ -90,7 +119,7 @@ class DetailOutingViewModel @Inject constructor(
             onSuccess = {
                 Log.d("DetailOutingViewModel", "Successfully joined outing")
                 showSuccessMessage("¡Te has unido a la salida!")
-                // Reload participants to reflect the new join
+                // Reload participants to reflect the new join (API Sync)
                 loadParticipants()
             },
             onFailure = { error ->
@@ -101,20 +130,14 @@ class DetailOutingViewModel @Inject constructor(
     }
 
     private suspend fun loadParticipants() {
-        _uiState.update { it.copy(isParticipantsLoading = true) }
-
+        // We no longer manually update participants here to avoid racing with the Flow.
+        // The Flow from DB will automatically update the UI.
         val participantsResult = useCases.getParticipants(outingId)
-        Log.d("DetailOutingViewModel", "Participants result: $participantsResult")
+        Log.d("DetailOutingViewModel", "Participants API sync result: $participantsResult")
 
-        participantsResult.fold(
-            onSuccess = { participants ->
-                _uiState.update { it.copy(participants = participants, isParticipantsLoading = false) }
-            },
-            onFailure = { error ->
-                Log.e("DetailOutingViewModel", "Error loading participants", error)
-                _uiState.update { it.copy(isParticipantsLoading = false) }
-            }
-        )
+        if (participantsResult.isFailure) {
+            Log.e("DetailOutingViewModel", "Error syncing participants from API", participantsResult.exceptionOrNull())
+        }
     }
 
     private suspend fun loadItems() {
@@ -171,10 +194,36 @@ class DetailOutingViewModel @Inject constructor(
         }
     }
 
+    fun selectSinglePayer(participantId: Long) {
+        _uiState.update { it.copy(selectedSinglePayerId = participantId, singlePayerError = null) }
+    }
+
     fun calculateSplits() {
-        _uiState.update { it.copy(isCalculatingSplits = true, error = null) }
+        val currentState = _uiState.value
+        val splitType = currentState.outingDetail?.splitType ?: "equal"
+        
+        val strategy: com.coditos.splitmeet.features.detailOuting.domain.strategies.CalculateSplitStrategy = when (splitType) {
+            "custom_fixed" -> com.coditos.splitmeet.features.detailOuting.domain.strategies.CustomFixedCalculateStrategy()
+            "per_consumption" -> com.coditos.splitmeet.features.detailOuting.domain.strategies.PerConsumptionCalculateStrategy()
+            "single_payer" -> com.coditos.splitmeet.features.detailOuting.domain.strategies.SinglePayerCalculateStrategy()
+            else -> com.coditos.splitmeet.features.detailOuting.domain.strategies.EqualCalculateStrategy()
+        }
+
+        val isValid = strategy.validate(currentState) { errorMessage ->
+            if (splitType == "single_payer") {
+                _uiState.update { it.copy(singlePayerError = errorMessage) }
+            } else {
+                _uiState.update { it.copy(error = errorMessage) }
+            }
+        }
+        
+        if (!isValid) return
+
+        val requestParams = strategy.extractRequestParams(currentState)
+
+        _uiState.update { it.copy(isCalculatingSplits = true, error = null, singlePayerError = null) }
         viewModelScope.launch {
-            val result = useCases.calculateSplits(outingId)
+            val result = useCases.calculateSplits(outingId, requestParams?.singlePayerId)
             result.fold(
                 onSuccess = {
                     _uiState.update { state -> state.copy(isCalculatingSplits = false) }

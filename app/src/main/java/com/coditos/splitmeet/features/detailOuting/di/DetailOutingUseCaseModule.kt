@@ -28,6 +28,12 @@ object DetailOutingUseCaseModule {
 
     @Provides
     @Singleton
+    fun provideObserveParticipantsUseCase(repository: DetailOutingRepository): ObserveParticipantsUseCase {
+        return ObserveParticipantsUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
     fun provideGetOutingItemsUseCase(repository: DetailOutingRepository): GetOutingItemsUseCase {
         return GetOutingItemsUseCase(repository)
     }
@@ -109,6 +115,7 @@ object DetailOutingUseCaseModule {
     fun provideDetailOutingUseCases(
         getOutingDetail: GetOutingDetailUseCase,
         getParticipants: GetParticipantsUseCase,
+        observeParticipants: ObserveParticipantsUseCase,
         getOutingItems: GetOutingItemsUseCase,
         searchUsers: SearchUsersUseCase,
         addParticipant: AddParticipantUseCase,
@@ -127,6 +134,7 @@ object DetailOutingUseCaseModule {
         return DetailOutingUseCases(
             getOutingDetail = getOutingDetail,
             getParticipants = getParticipants,
+            observeParticipants = observeParticipants,
             getOutingItems = getOutingItems,
             searchUsers = searchUsers,
             addParticipant = addParticipant,

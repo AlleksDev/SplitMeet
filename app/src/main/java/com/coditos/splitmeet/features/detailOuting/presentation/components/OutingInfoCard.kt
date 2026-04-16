@@ -1,6 +1,7 @@
 package com.coditos.splitmeet.features.detailOuting.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -117,24 +118,19 @@ fun OutingInfoCard(
                 outingDetail.categoryName?.let { category ->
                     Row(
                         modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.tertiaryContainer,
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary,
                                 shape = RoundedCornerShape(16.dp)
                             )
                             .padding(horizontal = 12.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Restaurant,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.size(14.dp)
-                        )
                         Text(
                             text = category,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }

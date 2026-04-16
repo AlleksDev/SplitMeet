@@ -59,7 +59,9 @@ data class DetailOutingUiState(
     val showSuccessMessage: Boolean = false,
     
     // Calculates
-    val isCalculatingSplits: Boolean = false
+    val isCalculatingSplits: Boolean = false,
+    val selectedSinglePayerId: Long? = null,
+    val singlePayerError: String? = null
 ) {
     val totalItems: Double
         get() = items.sumOf { it.subtotal }

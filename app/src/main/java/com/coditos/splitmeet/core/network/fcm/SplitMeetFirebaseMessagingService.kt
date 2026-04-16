@@ -113,8 +113,8 @@ class SplitMeetFirebaseMessagingService : FirebaseMessagingService() {
                 )
 
                 notificationBuilder
-                    .addAction(0, "Aceptar \u2705", acceptPendingIntent)
-                    .addAction(0, "Rechazar \u274C", rejectPendingIntent)
+                    .addAction(0, "Aceptar", acceptPendingIntent)
+                    .addAction(0, "Rechazar", rejectPendingIntent)
             }
         }
 

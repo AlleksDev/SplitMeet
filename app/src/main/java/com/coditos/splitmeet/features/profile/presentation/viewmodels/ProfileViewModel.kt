@@ -31,7 +31,7 @@ class ProfileViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false, profile = profile) }
                 },
                 onFailure = { e ->
-                    _uiState.update { it.copy(isLoading = false, error = e.message) }
+                    _uiState.update { it.copy(isLoading = false, error = getFriendlyErrorMessage(e)) }
                 }
             )
         }
@@ -102,9 +102,24 @@ class ProfileViewModel @Inject constructor(
                     }
                 },
                 onFailure = { e ->
-                    _uiState.update { it.copy(isUpdating = false, error = e.message) }
+                    _uiState.update { it.copy(isUpdating = false, error = getFriendlyErrorMessage(e)) }
                 }
             )
+        }
+    }
+
+    private fun getFriendlyErrorMessage(error: Throwable?): String {
+        val msg = error?.message?.lowercase() ?: return "Ocurrió un error inesperado."
+
+        return when {
+            msg.contains("401") || msg.contains("unauthorized") -> "Tu sesión ha expirado. Por favor, vuelve a iniciar sesión."
+            msg.contains("400") || msg.contains("bad request") -> "Verifica que los datos ingresados sean correctos."
+            msg.contains("404") -> "No pudimos cargar la información de tu perfil."
+            msg.contains("409") || msg.contains("conflict") -> "La información proporcionada ya está en uso por otra cuenta."
+            msg.contains("timeout") -> "La conexión tardó demasiado. Revisa tu internet e inténtalo de nuevo."
+            msg.contains("network") || msg.contains("unknownhost") || msg.contains("connect") -> "No hay conexión a internet. Revisa tu red."
+            msg.contains("500") || msg.contains("internal") -> "Problemas con el servidor. Por favor, inténtalo más tarde."
+            else -> "No pudimos completar la acción. Inténtalo de nuevo."
         }
     }
 }

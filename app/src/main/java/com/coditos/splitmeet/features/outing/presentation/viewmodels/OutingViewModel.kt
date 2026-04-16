@@ -27,6 +27,7 @@ class OutingViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        Log.d("OutingViewModel", "OutingViewModel initialized")
         loadCategories()
         loadGroups()
     }
@@ -49,7 +50,7 @@ class OutingViewModel @Inject constructor(
                     onFailure = { error ->
                         currentState.copy(
                             isCategoriesLoading = false,
-                            error = error.message
+                            error = getFriendlyErrorMessage(error)
                         )
                     }
                 )
@@ -67,21 +68,18 @@ class OutingViewModel @Inject constructor(
             _uiState.update { currentState ->
                 result.fold(
                     onSuccess = { groups ->
-                        // Add a dummy group representing "No group"
-                        val defaultOption = Group(id = -1, name = "Sin grupo asociado", description = "", ownerId = -1, memberCount = 0, ownerUsername = "")
-                        val groupsList = listOf(defaultOption) + groups
-
+                      
                         // Set the default option as selected by default
                         currentState.copy(
                             isGroupsLoading = false,
-                            groups = groupsList,
-                            selectedGroup = defaultOption
+                            groups = groups,
+                            selectedGroup = groups.firstOrNull()
                         )
                     },
                     onFailure = { error ->
                         currentState.copy(
                             isGroupsLoading = false,
-                            groupError = error.message
+                            groupError = getFriendlyErrorMessage(error)
                         )
                     }
                 )
@@ -202,11 +200,25 @@ class OutingViewModel @Inject constructor(
                         Log.e("OutingViewModel", "Error creating outing", error)
                         state.copy(
                             isLoading = false,
-                            error = error.message ?: "Error al crear la salida"
+                            error = getFriendlyErrorMessage(error)
                         )
                     }
                 )
             }
+        }
+    }
+
+    private fun getFriendlyErrorMessage(error: Throwable?): String {
+        val msg = error?.message?.lowercase() ?: return "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+
+        return when {
+            msg.contains("401") || msg.contains("unauthorized") -> "Tu sesión ha expirado. Por favor, vuelve a iniciar sesión."
+            msg.contains("400") || msg.contains("bad request") -> "Verifica que los datos ingresados sean correctos."
+            msg.contains("404") -> "No pudimos encontrar la información solicitada."
+            msg.contains("timeout") -> "La conexión tardó demasiado. Revisa tu internet e inténtalo de nuevo."
+            msg.contains("network") || msg.contains("unknownhost") || msg.contains("connect") -> "No hay conexión a internet. Revisa tu red."
+            msg.contains("500") || msg.contains("internal") -> "Problemas con el servidor. Por favor, inténtalo más tarde."
+            else -> "No pudimos guardar los cambios. Inténtalo de nuevo."
         }
     }
 

@@ -7,10 +7,10 @@ import javax.inject.Inject
 class CalculateSplitsUseCase @Inject constructor(
     private val repository: DetailOutingRepository
 ) {
-    suspend operator fun invoke(outingId: Long): Result<CalculateSplitsResponseDto> {
+    suspend operator fun invoke(outingId: Long, singlePayerId: Long? = null): Result<Boolean> {
         return try {
-            val response = repository.calculateSplits(outingId)
-            Result.success(response)
+            repository.calculateSplits(outingId, singlePayerId)
+            Result.success(true)
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -50,11 +50,47 @@ class DetailOutingRepositoryImpl @Inject constructor(
         return try {
             withContext(Dispatchers.IO) {
                 val remoteOuting = api.getOutingById(outingId)
+                
+                // IMPORTANT ATOMICITY: Persist Outing to local DB FIRST so participants don't throw Foreign Key Constraint
+                val outingEntity = com.coditos.splitmeet.core.database.entities.OutingEntity(
+                    id = remoteOuting.id ?: outingId,
+                    name = remoteOuting.name ?: "",
+                    description = remoteOuting.description,
+                    categoryName = remoteOuting.categoryName ?: "General",
+                    splitType = remoteOuting.splitType ?: "equal",
+                    totalAmount = (remoteOuting.totalAmount ?: 0.0).toFloat(),
+                    participantCount = remoteOuting.participantCount ?: 0,
+                    paidCount = remoteOuting.paidCount ?: 0,
+                    status = remoteOuting.status ?: "active",
+                    createdAt = remoteOuting.outingDate
+                )
+                outingDao.insertOuting(outingEntity)
+                
                 remoteOuting.toDomain()
             }
         } catch (e: Exception) {
             Log.w("DetailOutingRepo", "Error fetching outing from API, using cached version", e)
-            throw e  // Re-throw error, should use cached version at higher level
+            if (localOuting != null) {
+                // If API fails, fallback to local DB representation
+                OutingDetail(
+                    id = localOuting.id,
+                    name = localOuting.name,
+                    description = localOuting.description,
+                    categoryId = 0, // Fallback placeholder
+                    categoryName = localOuting.categoryName,
+                    groupId = null,
+                    creatorId = 0, // Requires join but fallback minimal
+                    outingDate = localOuting.createdAt ?: "",
+                    splitType = localOuting.splitType,
+                    totalAmount = localOuting.totalAmount.toDouble(),
+                    status = localOuting.status,
+                    isEditable = false,
+                    participantCount = localOuting.participantCount,
+                    paidCount = localOuting.paidCount
+                )
+            } else {
+                throw e  // Re-throw error, should use cached version at higher level
+            }
         }
     }
 
@@ -90,7 +126,7 @@ class DetailOutingRepositoryImpl @Inject constructor(
      * Get participants as Flow for reactive UI updates.
      * This is the method the ViewModel should use for observing changes.
      */
-    fun observeParticipants(outingId: Long): Flow<List<Participant>> {
+    override fun observeParticipants(outingId: Long): Flow<List<Participant>> {
         return participantDao.getAllByOutingId(outingId).map { entities ->
             entities.toDomainList()
         }
@@ -257,7 +293,13 @@ class DetailOutingRepositoryImpl @Inject constructor(
 
     override suspend fun getPaymentsByOuting(outingId: Long): List<PaymentData> {
         return withContext(Dispatchers.IO) {
-            val response = api.getPaymentsByOuting(outingId)
+            val response = try {
+                api.getPaymentsByOuting(outingId) ?: emptyList()
+            } catch (e: Exception) {
+                Log.e("DetailOutingRepo", "Error fetching payments: ${e.message}")
+                emptyList()
+            }
+            
             response.mapNotNull { paymentDto ->
                 if (paymentDto.id != null && paymentDto.participantId != null) {
                     PaymentData(
@@ -273,9 +315,14 @@ class DetailOutingRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun calculateSplits(outingId: Long): com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsResponseDto {
+    override suspend fun calculateSplits(outingId: Long, singlePayerId: Long?): com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsResponseDto {
         return withContext(Dispatchers.IO) {
-            api.calculateSplits(outingId)
+            val request = if (singlePayerId != null) {
+                com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsRequest(singlePayerId = singlePayerId)
+            } else {
+                com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsRequest()
+            }
+            api.calculateSplits(outingId, request)
         }
     }
 }

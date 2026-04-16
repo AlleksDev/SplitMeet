@@ -60,7 +60,9 @@ fun OutingDatePicker(
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
-    )
+    ).apply {
+        datePicker.minDate = System.currentTimeMillis()
+    }
 
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
