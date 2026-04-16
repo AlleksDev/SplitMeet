@@ -28,4 +28,5 @@ interface DetailOutingRepository {
     suspend fun getCategories(): List<Category>
     suspend fun joinOuting(outingId: Long)
     suspend fun getPaymentsByOuting(outingId: Long): List<PaymentData>
+    suspend fun calculateSplits(outingId: Long): com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsResponseDto
 }

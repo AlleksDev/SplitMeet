@@ -7,6 +7,8 @@ import com.coditos.splitmeet.features.outing.data.datasources.remote.model.Creat
 import com.coditos.splitmeet.features.outing.domain.entities.Category
 import com.coditos.splitmeet.features.outing.domain.entities.SplitType
 import com.coditos.splitmeet.features.outing.domain.usecases.OutingUseCases
+import com.coditos.splitmeet.features.group.domain.repositories.GroupRepository
+import com.coditos.splitmeet.features.group.domain.entities.Group
 import com.coditos.splitmeet.features.outing.presentation.screens.CreateOutingUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OutingViewModel @Inject constructor(
-    private val useCases: OutingUseCases
+    private val useCases: OutingUseCases,
+    private val groupRepository: GroupRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateOutingUiState())
@@ -25,6 +28,7 @@ class OutingViewModel @Inject constructor(
 
     init {
         loadCategories()
+        loadGroups()
     }
 
     private fun loadCategories() {
@@ -46,6 +50,38 @@ class OutingViewModel @Inject constructor(
                         currentState.copy(
                             isCategoriesLoading = false,
                             error = error.message
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+    private fun loadGroups() {
+        _uiState.update { it.copy(isGroupsLoading = true) }
+
+        viewModelScope.launch {
+            val result = groupRepository.getMyGroups()
+            Log.d("OutingViewModel", "Groups result: $result")
+
+            _uiState.update { currentState ->
+                result.fold(
+                    onSuccess = { groups ->
+                        // Add a dummy group representing "No group"
+                        val defaultOption = Group(id = -1, name = "Sin grupo asociado", description = "", ownerId = -1, memberCount = 0, ownerUsername = "")
+                        val groupsList = listOf(defaultOption) + groups
+
+                        // Set the default option as selected by default
+                        currentState.copy(
+                            isGroupsLoading = false,
+                            groups = groupsList,
+                            selectedGroup = defaultOption
+                        )
+                    },
+                    onFailure = { error ->
+                        currentState.copy(
+                            isGroupsLoading = false,
+                            groupError = error.message
                         )
                     }
                 )
@@ -93,6 +129,15 @@ class OutingViewModel @Inject constructor(
         }
     }
 
+    fun onGroupSelected(group: Group) {
+        _uiState.update {
+            it.copy(
+                selectedGroup = group,
+                groupError = null
+            )
+        }
+    }
+
     fun createOuting() {
         val currentState = _uiState.value
 
@@ -128,12 +173,15 @@ class OutingViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true, error = null) }
 
         viewModelScope.launch {
+            val payloadGroupId = if (currentState.selectedGroup?.id == -1L) null else currentState.selectedGroup?.id
+
             val request = CreateOutingRequest(
                 name = currentState.name,
                 description = currentState.description.ifBlank { null },
                 categoryId = currentState.selectedCategory!!.id,
                 outingDate = currentState.selectedDate,
-                splitType = currentState.selectedSplitType!!.value
+                splitType = currentState.selectedSplitType!!.value,
+                groupId = payloadGroupId
             )
 
             Log.d("OutingViewModel", "Creating outing with request: $request")

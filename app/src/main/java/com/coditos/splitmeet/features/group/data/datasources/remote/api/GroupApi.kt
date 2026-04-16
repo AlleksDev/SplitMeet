@@ -4,6 +4,7 @@ import com.coditos.splitmeet.features.group.data.datasources.remote.model.Create
 import com.coditos.splitmeet.features.group.data.datasources.remote.model.GroupDto
 import com.coditos.splitmeet.features.group.data.datasources.remote.model.GroupMemberDto
 import com.coditos.splitmeet.features.group.data.datasources.remote.model.InviteMemberRequest
+import com.coditos.splitmeet.features.group.data.datasources.remote.model.RespondInvitationRequest
 import com.coditos.splitmeet.features.group.data.datasources.remote.model.PaginatedGroupsResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -43,6 +44,12 @@ interface GroupApi {
     suspend fun inviteMember(
         @Path("id") groupId: Long,
         @Body request: InviteMemberRequest
+    )
+    
+    @PATCH("groups/{id}/invitation")
+    suspend fun respondInvitation(
+        @Path("id") groupId: Long,
+        @Body request: RespondInvitationRequest
     )
 
     @DELETE("groups/{id}/members/{userId}")

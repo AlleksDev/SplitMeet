@@ -12,7 +12,7 @@ import com.coditos.splitmeet.core.database.entities.ParticipantEntity
 
 @Database(
     entities = [OutingEntity::class, ParticipantEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 

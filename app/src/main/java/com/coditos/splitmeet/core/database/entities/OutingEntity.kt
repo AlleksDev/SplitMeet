@@ -13,5 +13,6 @@ data class OutingEntity (
     val totalAmount: Float,
     val participantCount: Int,
     val paidCount: Int,
-    val createdAt: String? = null
+    val createdAt: String? = null,
+    val status: String
 )

@@ -272,4 +272,10 @@ class DetailOutingRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun calculateSplits(outingId: Long): com.coditos.splitmeet.features.detailOuting.data.datasources.remote.model.CalculateSplitsResponseDto {
+        return withContext(Dispatchers.IO) {
+            api.calculateSplits(outingId)
+        }
+    }
 }
