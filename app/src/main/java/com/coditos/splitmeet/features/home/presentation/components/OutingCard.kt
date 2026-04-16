@@ -142,7 +142,8 @@ fun PrevOutingCard() {
             splitType = "Equally",
             totalAmount = 100f,
             participantCount = 13,
-            paidCount = 5
+            paidCount = 5,
+            status = "active"
         )
         OutingCard(exp)
     }

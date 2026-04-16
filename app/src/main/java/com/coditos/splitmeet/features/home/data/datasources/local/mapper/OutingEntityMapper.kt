@@ -12,4 +12,5 @@ fun OutingEntity.toDomain() = Outing(id,
                                     totalAmount,
                                     participantCount,
                                     paidCount,
-                                    createdAt)
+                                    createdAt,
+                                    status)

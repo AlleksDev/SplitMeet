@@ -64,10 +64,13 @@ class SplitMeetFirebaseMessagingService : FirebaseMessagingService() {
             ?: message.data["body"]
             ?: return
 
-        showNotification(title, body, message.data)
+        val type = message.data["type"]
+        val entityId = message.data["outingId"] ?: message.data["groupId"]
+
+        showNotification(title, body, message.data, type, entityId)
     }
 
-    private fun showNotification(title: String, body: String, data: Map<String, String>) {
+    private fun showNotification(title: String, body: String, data: Map<String, String>, type: String?, entityId: String?) {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             data.forEach { (key, value) -> putExtra(key, value) }
@@ -80,7 +83,9 @@ class SplitMeetFirebaseMessagingService : FirebaseMessagingService() {
             PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notificationId = System.currentTimeMillis().toInt()
+        
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(body)
@@ -88,11 +93,45 @@ class SplitMeetFirebaseMessagingService : FirebaseMessagingService() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setContentIntent(pendingIntent)
-            .build()
+            
+        // Si es una invitacion, agregamos los botones de interaccion rapida
+        if (type == "group_invitation" || type == "outing_invitation") {
+            if (entityId != null) {
+                // Action: Accept
+                val acceptIntent = Intent(this, NotificationActionReceiver::class.java).apply {
+                    action = NotificationActionReceiver.ACTION_ACCEPT
+                    putExtra(NotificationActionReceiver.EXTRA_TYPE, type)
+                    putExtra(NotificationActionReceiver.EXTRA_ENTITY_ID, entityId)
+                    putExtra(NotificationActionReceiver.EXTRA_NOTIFICATION_ID, notificationId)
+                }
+                val acceptPendingIntent = PendingIntent.getBroadcast(
+                    this, notificationId + 1, acceptIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                
+                // Action: Reject
+                val rejectIntent = Intent(this, NotificationActionReceiver::class.java).apply {
+                    action = NotificationActionReceiver.ACTION_REJECT
+                    putExtra(NotificationActionReceiver.EXTRA_TYPE, type)
+                    putExtra(NotificationActionReceiver.EXTRA_ENTITY_ID, entityId)
+                    putExtra(NotificationActionReceiver.EXTRA_NOTIFICATION_ID, notificationId)
+                }
+                val rejectPendingIntent = PendingIntent.getBroadcast(
+                    this, notificationId + 2, rejectIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
+                notificationBuilder
+                    .addAction(0, "Aceptar \u2705", acceptPendingIntent)
+                    .addAction(0, "Rechazar \u274C", rejectPendingIntent)
+            }
+        }
+
+        val notification = notificationBuilder.build()
 
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+        notificationManager.notify(notificationId, notification)
     }
 }

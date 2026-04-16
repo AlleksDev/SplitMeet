@@ -152,6 +152,20 @@ fun CreateOutingScreen(
                         enabled = !uiState.isLoading
                     )
 
+                    // Grupo (Opcional)
+                    OutingDropdown(
+                        selectedValue = uiState.selectedGroup,
+                        onValueSelected = viewModel::onGroupSelected,
+                        options = uiState.groups,
+                        label = "Grupo (Opcional)",
+                        placeholder = "Seleccionar un grupo",
+                        displayText = { it.name },
+                        isError = uiState.groupError != null,
+                        errorMessage = uiState.groupError,
+                        enabled = !uiState.isLoading,
+                        isLoading = uiState.isGroupsLoading
+                    )
+
                     // Descripción
                     OutingDescriptionField(
                         value = uiState.description,

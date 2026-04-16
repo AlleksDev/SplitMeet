@@ -171,6 +171,23 @@ class DetailOutingViewModel @Inject constructor(
         }
     }
 
+    fun calculateSplits() {
+        _uiState.update { it.copy(isCalculatingSplits = true, error = null) }
+        viewModelScope.launch {
+            val result = useCases.calculateSplits(outingId)
+            result.fold(
+                onSuccess = {
+                    _uiState.update { state -> state.copy(isCalculatingSplits = false) }
+                    showSuccessMessage("Saldos recalculados correctamente")
+                    refreshData()
+                },
+                onFailure = { error ->
+                    _uiState.update { state -> state.copy(isCalculatingSplits = false, error = mapOperationError(error)) }
+                }
+            )
+        }
+    }
+
     // Add participant modal
     fun showAddParticipantModal() {
         _uiState.update { 

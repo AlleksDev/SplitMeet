@@ -12,5 +12,7 @@ data class CreateOutingRequest(
     @SerializedName("outing_date")
     val outingDate: String,
     @SerializedName("split_type")
-    val splitType: String
+    val splitType: String,
+    @SerializedName("group_id")
+    val groupId: Long? = null
 )

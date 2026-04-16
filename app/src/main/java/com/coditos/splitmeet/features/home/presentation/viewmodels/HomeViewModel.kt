@@ -31,7 +31,9 @@ class HomeViewModel @Inject constructor(
         homeUseCases.getOutings()
             .onEach { outings ->
                 Log.d("HomeViewModel", "Room emitió: ${outings.size} outings")
-                _uiState.update { it.copy(outings = outings, isLoading = false) }
+                val active = outings.filter { it.status == "active" }
+                val history = outings.filter { it.status == "completed" || it.status == "cancelled" }
+                _uiState.update { it.copy(activeOutings = active, historyOutings = history, isLoading = false) }
             }
             .launchIn(viewModelScope)
     }
@@ -43,7 +45,7 @@ class HomeViewModel @Inject constructor(
                 homeUseCases.syncOutings()
             } catch (e: Exception) {
                 // Solo muestra error si además no hay datos en caché
-                if (_uiState.value.outings.isEmpty()) {
+                if (_uiState.value.activeOutings.isEmpty() && _uiState.value.historyOutings.isEmpty()) {
                     _uiState.update {
                         it.copy(error = "Sin conexión y sin datos guardados")
                     }
